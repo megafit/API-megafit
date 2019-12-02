@@ -14,8 +14,12 @@ module.exports = (sequelize, DataTypes) => {
     adminId: DataTypes.INTEGER,
     status: DataTypes.STRING
   }, {});
-  tblTransactions.associate = function(models) {
+  tblTransactions.associate = function (models) {
     // associations can be defined here
+    tblTransactions.belongsTo(models.tblBanks, { foreignKey: "fromBank" })
+    tblTransactions.belongsTo(models.tblBanks, { foreignKey: "toBank" })
+    tblTransactions.belongsTo(models.tblUsers, { foreignKey: "userId" })
+    tblTransactions.belongsTo(models.tblUsers, { foreignKey: "adminId" })
   };
   return tblTransactions;
 };

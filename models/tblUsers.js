@@ -25,13 +25,14 @@ module.exports = (sequelize, DataTypes) => {
 
     tblUsers.hasMany(models.tblAttendances, { foreignKey: "userId" })
     tblUsers.hasMany(models.tblClassPts, { foreignKey: "userId" })
-    tblUsers.hasMany(models.tblClassPts, { foreignKey: "userId" })
     tblUsers.hasMany(models.tblCardPayments, { foreignKey: "userId" })
     tblUsers.hasMany(models.tblPrivileges, { foreignKey: "userId" })
     tblUsers.hasMany(models.tblCheckinCheckouts, { foreignKey: "userId" })
     tblUsers.hasMany(models.tblCheckinCheckouts, { foreignKey: "adminId" })
     tblUsers.hasMany(models.tblTransactions, { foreignKey: "userId" })
     tblUsers.hasMany(models.tblTransactions, { foreignKey: "adminId" })
+    tblUsers.hasMany(models.tblMemberships, { foreignKey: "userId" })
+    tblUsers.hasMany(models.tblMemberships, { foreignKey: "ptId" })
   };
   return tblUsers;
 };

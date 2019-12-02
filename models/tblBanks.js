@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
     bankId: DataTypes.INTEGER,
     role: DataTypes.STRING
   }, {});
-  tblBanks.associate = function(models) {
+  tblBanks.associate = function (models) {
     // associations can be defined here
     tblBanks.hasMany(models.tblCardPayments, { foreignKey: "bankId" })
     tblBanks.hasMany(models.tblTransactions, { foreignKey: "fromBank" })

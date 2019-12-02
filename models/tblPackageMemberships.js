@@ -14,8 +14,10 @@ module.exports = (sequelize, DataTypes) => {
     flagActive: DataTypes.BOOLEAN,
     sessionPtHours: DataTypes.INTEGER
   }, {});
-  tblPackageMemberships.associate = function(models) {
+  tblPackageMemberships.associate = function (models) {
     // associations can be defined here
+    tblPackageMemberships.belongsTo(models.tblCategoryMemberships, { foreignKey: "categoryMembershipId" })
+    tblPackageMemberships.hasMany(models.tblMemberships, { foreignKey: "packageMembershipId" })
   };
   return tblPackageMemberships;
 };

@@ -4,8 +4,9 @@ module.exports = (sequelize, DataTypes) => {
     categoryMembershipId: DataTypes.INTEGER,
     categoryMembership: DataTypes.STRING
   }, {});
-  tblCategoryMemberships.associate = function(models) {
+  tblCategoryMemberships.associate = function (models) {
     // associations can be defined here
+    tblCategoryMemberships.hasMany(models.tblCategoryMemberships, { foreignKey: "categoryMembershipId" })
   };
   return tblCategoryMemberships;
 };

@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
     isPermanent: DataTypes.BOOLEAN,
     available: DataTypes.BOOLEAN
   }, {});
-  tblStaffs.associate = function(models) {
+  tblStaffs.associate = function (models) {
     // associations can be defined here
     tblStaffs.belongsTo(models.tblUsers, { foreignKey: "userId" })
     tblStaffs.belongsTo(models.tblPositions, { foreignKey: "positionId" })

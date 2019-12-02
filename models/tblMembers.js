@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
     activeDate: DataTypes.DATE,
     packageMembershipId: DataTypes.STRING
   }, {});
-  tblMembers.associate = function(models) {
+  tblMembers.associate = function (models) {
     // associations can be defined here
     tblMembers.belongsTo(models.tblUsers, { foreignKey: "userId" })
   };

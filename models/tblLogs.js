@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
     user: DataTypes.STRING,
     keterangan: DataTypes.STRING
   }, {});
-  tblLogs.associate = function(models) {
+  tblLogs.associate = function (models) {
     // associations can be defined here
   };
   return tblLogs;

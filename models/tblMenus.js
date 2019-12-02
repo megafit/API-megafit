@@ -4,10 +4,9 @@ module.exports = (sequelize, DataTypes) => {
     menuId: DataTypes.INTEGER,
     menu: DataTypes.STRING
   }, {});
-  tblMenus.associate = function(models) {
+  tblMenus.associate = function (models) {
     // associations can be defined here
     tblMenus.hasMany(models.tblPrivileges, { foreignKey: "menuId" })
-
   };
   return tblMenus;
 };

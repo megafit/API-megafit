@@ -6,11 +6,10 @@ module.exports = (sequelize, DataTypes) => {
     userId: DataTypes.INTEGER,
     classDate: DataTypes.DATE
   }, {});
-  tblClassPts.associate = function(models) {
+  tblClassPts.associate = function (models) {
     // associations can be defined here
     tblClassPts.belongsTo(models.tblClasses, { foreignKey: "classId" })
     tblClassPts.belongsTo(models.tblUsers, { foreignKey: "userId" })
-
   };
   return tblClassPts;
 };

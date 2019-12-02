@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
     update: DataTypes.BOOLEAN,
     delete: DataTypes.BOOLEAN
   }, {});
-  tblPrivileges.associate = function(models) {
+  tblPrivileges.associate = function (models) {
     // associations can be defined here
     tblPrivileges.belongsTo(models.tblUsers, { foreignKey: "userId" })
     tblPrivileges.belongsTo(models.tblMenus, { foreignKey: "menuId" })

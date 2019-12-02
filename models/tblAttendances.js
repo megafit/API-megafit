@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
     years: DataTypes.STRING,
     lastAttend: DataTypes.DATE
   }, {});
-  tblAttendances.associate = function(models) {
+  tblAttendances.associate = function (models) {
     // associations can be defined here
     tblAttendances.belongsTo(models.tblUsers, { foreignKey: "userId" })
   };

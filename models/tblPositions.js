@@ -4,10 +4,9 @@ module.exports = (sequelize, DataTypes) => {
     positionId: DataTypes.INTEGER,
     position: DataTypes.STRING
   }, {});
-  tblPositions.associate = function(models) {
+  tblPositions.associate = function (models) {
     // associations can be defined here
     tblPositions.hasMany(models.tblStaffs, { foreignKey: "positionId" })
-
   };
   return tblPositions;
 };

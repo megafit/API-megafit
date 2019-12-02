@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
     bankId: DataTypes.INTEGER,
     typeCard: DataTypes.STRING
   }, {});
-  tblCardPayments.associate = function(models) {
+  tblCardPayments.associate = function (models) {
     // associations can be defined here
     tblCardPayments.belongsTo(models.tblUsers, { foreignKey: "userId" })
     tblCardPayments.belongsTo(models.tblBanks, { foreignKey: "bankId" })
