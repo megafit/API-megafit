@@ -9,7 +9,8 @@ module.exports = {
         type: Sequelize.INTEGER(11)
       },
       class: {
-        type: Sequelize.STRING(150)
+        type: Sequelize.STRING(150),
+        unique: true
       },
       classDate: {
         type: Sequelize.STRING(30)
@@ -17,11 +18,17 @@ module.exports = {
       classDay: {
         type: Sequelize.STRING(30)
       },
-      classTime: {
+      classTimeIn: {
+        type: Sequelize.TIME
+      },
+      classTimeOut: {
         type: Sequelize.TIME
       },
       flagActive: {
         type: Sequelize.BOOLEAN
+      },
+      color: {
+        type: Sequelize.STRING(30)
       },
       createdAt: {
         allowNull: false,

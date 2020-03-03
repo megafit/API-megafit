@@ -1,7 +1,10 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const tblPrivileges = sequelize.define('tblPrivileges', {
-    privilegeId: DataTypes.INTEGER,
+    privilegeId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true
+    },
     userId: DataTypes.INTEGER,
     menuId: DataTypes.INTEGER,
     create: DataTypes.BOOLEAN,

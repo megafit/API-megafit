@@ -1,7 +1,10 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const tblTransactions = sequelize.define('tblTransactions', {
-    transactionId: DataTypes.INTEGER,
+    transactionId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true
+    },
     salesInvoice: DataTypes.STRING,
     amount: DataTypes.INTEGER,
     methodPayment: DataTypes.STRING,

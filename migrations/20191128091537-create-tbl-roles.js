@@ -9,7 +9,8 @@ module.exports = {
         type: Sequelize.INTEGER(11)
       },
       role: {
-        type: Sequelize.STRING(50)
+        type: Sequelize.STRING(50),
+        unique: true
       },
       createdAt: {
         allowNull: false,

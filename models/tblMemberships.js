@@ -1,7 +1,10 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const tblMemberships = sequelize.define('tblMemberships', {
-    membershipId: DataTypes.INTEGER,
+    membershipId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true
+    },
     userId: DataTypes.INTEGER,
     packageMembershipId: DataTypes.STRING,
     ptId: DataTypes.INTEGER,

@@ -14,7 +14,6 @@ module.exports = {
           model: 'tblClasses',
           key: 'classId'
         },
-        onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
       userId: {
@@ -23,8 +22,7 @@ module.exports = {
           model: 'tblUsers',
           key: 'userId'
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
+        onDelete: 'SET NULL',
       },
       classDate: {
         type: Sequelize.DATE

@@ -14,7 +14,6 @@ module.exports = {
           model: 'tblUsers',
           key: 'userId'
         },
-        onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
       packageMembershipId: {
@@ -30,7 +29,6 @@ module.exports = {
           model: 'tblUsers',
           key: 'userId'
         },
-        onUpdate: 'CASCADE',
         onDelete: 'SET NULL',
       },
       dateExpired: {

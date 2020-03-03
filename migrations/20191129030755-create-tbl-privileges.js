@@ -14,7 +14,6 @@ module.exports = {
           model: 'tblUsers',
           key: 'userId'
         },
-        onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
       menuId: {
@@ -23,8 +22,7 @@ module.exports = {
           model: 'tblMenus',
           key: 'menuId'
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL',
+        onDelete: 'CASCADE',
       },
       create: {
         type: Sequelize.BOOLEAN

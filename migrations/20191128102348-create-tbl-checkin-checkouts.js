@@ -14,17 +14,21 @@ module.exports = {
           model: 'tblUsers',
           key: 'userId'
         },
-        onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
-      adminId: {
+      adminIdCheckin: {
         type: Sequelize.INTEGER(11),
         references: {
           model: 'tblUsers',
           key: 'userId'
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL',
+      },
+      adminIdCheckout: {
+        type: Sequelize.INTEGER(11),
+        references: {
+          model: 'tblUsers',
+          key: 'userId'
+        },
       },
       checkinTime: {
         type: Sequelize.TIME
@@ -33,7 +37,7 @@ module.exports = {
         type: Sequelize.TIME
       },
       lockerKey: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.STRING(4),
       },
       createdAt: {
         allowNull: false,

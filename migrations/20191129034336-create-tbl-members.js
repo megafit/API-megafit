@@ -4,9 +4,8 @@ module.exports = {
     return queryInterface.createTable('tblMembers', {
       memberId: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER(11)
+        type: Sequelize.INTEGER(4).ZEROFILL.UNSIGNED
       },
       userId: {
         type: Sequelize.INTEGER(11),
@@ -14,7 +13,6 @@ module.exports = {
           model: 'tblUsers',
           key: 'userId'
         },
-        onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
       activeExpired: {
@@ -35,7 +33,6 @@ module.exports = {
           model: 'tblPackageMemberships',
           key: 'packageMembershipId'
         },
-        onUpdate: 'CASCADE',
         onDelete: 'SET NULL',
       },
       createdAt: {

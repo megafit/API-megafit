@@ -14,7 +14,6 @@ module.exports = {
           model: 'tblUsers',
           key: 'userId'
         },
-        onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
       absent: {

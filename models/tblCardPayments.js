@@ -1,7 +1,10 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const tblCardPayments = sequelize.define('tblCardPayments', {
-    cardPaymentId: DataTypes.INTEGER,
+    cardPaymentId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true
+    },
     userId: DataTypes.INTEGER,
     noCard: DataTypes.STRING,
     bankId: DataTypes.INTEGER,

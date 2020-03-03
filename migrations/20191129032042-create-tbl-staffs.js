@@ -14,7 +14,6 @@ module.exports = {
           model: 'tblUsers',
           key: 'userId'
         },
-        onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
       positionId: {
@@ -23,7 +22,6 @@ module.exports = {
           model: 'tblPositions',
           key: 'positionId'
         },
-        onUpdate: 'CASCADE',
         onDelete: 'SET NULL',
       },
       isPermanent: {
@@ -31,6 +29,9 @@ module.exports = {
       },
       available: {
         type: Sequelize.BOOLEAN
+      },
+      cardImage: {
+        type: Sequelize.STRING(255)
       },
       createdAt: {
         allowNull: false,

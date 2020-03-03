@@ -16,7 +16,6 @@ module.exports = {
           model: 'tblCategoryMemberships',
           key: 'categoryMembershipId'
         },
-        onUpdate: 'CASCADE',
         onDelete: 'SET NULL',
       },
       times: {

@@ -13,9 +13,7 @@ module.exports = {
         references: {
           model: 'tblUsers',
           key: 'userId'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
+        }
       },
       noCard: {
         type: Sequelize.STRING(30)
@@ -26,8 +24,6 @@ module.exports = {
           model: 'tblBanks',
           key: 'bankId'
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL',
       },
       typeCard: {
         type: Sequelize.STRING(10)

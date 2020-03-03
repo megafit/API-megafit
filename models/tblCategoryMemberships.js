@@ -1,7 +1,10 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const tblCategoryMemberships = sequelize.define('tblCategoryMemberships', {
-    categoryMembershipId: DataTypes.INTEGER,
+    categoryMembershipId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true
+    },
     categoryMembership: DataTypes.STRING
   }, {});
   tblCategoryMemberships.associate = function (models) {

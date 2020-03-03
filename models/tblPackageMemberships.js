@@ -1,7 +1,10 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const tblPackageMemberships = sequelize.define('tblPackageMemberships', {
-    packageMembershipId: DataTypes.INTEGER,
+    packageMembershipId: {
+      type: DataTypes.STRING,
+      primaryKey: true
+    },
     package: DataTypes.STRING,
     categoryMembershipId: DataTypes.INTEGER,
     times: DataTypes.INTEGER,
@@ -14,10 +17,14 @@ module.exports = (sequelize, DataTypes) => {
     flagActive: DataTypes.BOOLEAN,
     sessionPtHours: DataTypes.INTEGER
   }, {});
+
+  tblPackageMemberships.removeAttribute('id');
+
   tblPackageMemberships.associate = function (models) {
     // associations can be defined here
     tblPackageMemberships.belongsTo(models.tblCategoryMemberships, { foreignKey: "categoryMembershipId" })
     tblPackageMemberships.hasMany(models.tblMemberships, { foreignKey: "packageMembershipId" })
+    tblPackageMemberships.hasMany(models.tblMembers, { foreignKey: "packageMembershipId" })
   };
   return tblPackageMemberships;
 };

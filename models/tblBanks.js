@@ -1,7 +1,10 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const tblBanks = sequelize.define('tblBanks', {
-    bankId: DataTypes.INTEGER,
+    bankId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true
+    },
     role: DataTypes.STRING
   }, {});
   tblBanks.associate = function (models) {

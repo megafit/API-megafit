@@ -1,7 +1,10 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const tblAttendances = sequelize.define('tblAttendances', {
-    attendanceId: DataTypes.INTEGER,
+    attendanceId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true
+    },
     userId: DataTypes.INTEGER,
     absent: DataTypes.INTEGER,
     late: DataTypes.INTEGER,
@@ -9,6 +12,9 @@ module.exports = (sequelize, DataTypes) => {
     years: DataTypes.STRING,
     lastAttend: DataTypes.DATE
   }, {});
+
+  tblAttendances.removeAttribute('id');
+
   tblAttendances.associate = function (models) {
     // associations can be defined here
     tblAttendances.belongsTo(models.tblUsers, { foreignKey: "userId" })

@@ -9,7 +9,8 @@ module.exports = {
         type: Sequelize.INTEGER(11)
       },
       username: {
-        type: Sequelize.STRING(50)
+        type: Sequelize.STRING(50),
+        unique: true
       },
       password: {
         type: Sequelize.STRING(255)
@@ -20,20 +21,24 @@ module.exports = {
       nickname: {
         type: Sequelize.STRING(100)
       },
+      avatar: {
+        type: Sequelize.STRING(255)
+      },
       noKtp: {
-        type: Sequelize.STRING(16)
+        type: Sequelize.STRING(20)
       },
       dateOfBirth: {
         type: Sequelize.DATE
       },
       email: {
-        type: Sequelize.STRING(100)
+        type: Sequelize.STRING(100),
+        unique: true
       },
       phone: {
         type: Sequelize.STRING(20)
       },
       gender: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.STRING(15)
       },
       igAccount: {
         type: Sequelize.STRING(150)
@@ -43,9 +48,7 @@ module.exports = {
         references: {
           model: 'tblRoles',
           key: 'roleId'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL',
+        }
       },
       haveWhatsapp: {
         type: Sequelize.BOOLEAN

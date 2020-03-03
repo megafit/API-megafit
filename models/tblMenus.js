@@ -1,7 +1,10 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const tblMenus = sequelize.define('tblMenus', {
-    menuId: DataTypes.INTEGER,
+    menuId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true
+    },
     menu: DataTypes.STRING
   }, {});
   tblMenus.associate = function (models) {
