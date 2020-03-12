@@ -11,7 +11,7 @@ let app = express()
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(cors())
-app.use(express.static('root/API-megafit'))
+app.use('/qr', express.static('qr'))
 
 app.use(morgan('dev'))
 app.use('/', route)

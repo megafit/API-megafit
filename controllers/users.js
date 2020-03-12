@@ -1,6 +1,6 @@
-const { tblUsers, tblStaffs, tblMembers, tblPackageMemberships, tblCheckinCheckouts, tblRoles, tblCategoryMemberships } = require(".http://209.97.175.174/models")
-const { compare, hash } = require(".http://209.97.175.174/helpers/bcrypt")
-const { sign, verify } = require(".http://209.97.175.174/helpers/jwt")
+const { tblUsers, tblStaffs, tblMembers, tblPackageMemberships, tblCheckinCheckouts, tblRoles, tblCategoryMemberships } = require("../models")
+const { compare, hash } = require("../helpers/bcrypt")
+const { sign, verify } = require("../helpers/jwt")
 const QRCode = require('qrcode')
 const Op = require('sequelize').Op
 const excelToJson = require('convert-excel-to-json');
@@ -17,7 +17,7 @@ class users {
         fullname: req.body.fullname,
         nickname: req.body.nickname,
         noKtp: req.body.noKtp,
-        avatar: req.file ? req.file.path : ".http://209.97.175.174/asset/icon_user.png",
+        avatar: req.file ? req.file.path : "http://209.97.175.174/asset/icon_user.png",
         dateOfBirth: new Date(req.body.dateOfBirth),
         email: req.body.email,
         phone: req.body.phone,
