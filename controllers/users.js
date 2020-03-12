@@ -1,6 +1,6 @@
-const { tblUsers, tblStaffs, tblMembers, tblPackageMemberships, tblCheckinCheckouts, tblRoles, tblCategoryMemberships } = require("../models")
-const { compare, hash } = require("../helpers/bcrypt")
-const { sign, verify } = require("../helpers/jwt")
+const { tblUsers, tblStaffs, tblMembers, tblPackageMemberships, tblCheckinCheckouts, tblRoles, tblCategoryMemberships } = require(".http://209.97.175.174/models")
+const { compare, hash } = require(".http://209.97.175.174/helpers/bcrypt")
+const { sign, verify } = require(".http://209.97.175.174/helpers/jwt")
 const QRCode = require('qrcode')
 const Op = require('sequelize').Op
 const excelToJson = require('convert-excel-to-json');
@@ -17,7 +17,7 @@ class users {
         fullname: req.body.fullname,
         nickname: req.body.nickname,
         noKtp: req.body.noKtp,
-        avatar: req.file ? req.file.path : "../asset/icon_user.png",
+        avatar: req.file ? req.file.path : ".http://209.97.175.174/asset/icon_user.png",
         dateOfBirth: new Date(req.body.dateOfBirth),
         email: req.body.email,
         phone: req.body.phone,
@@ -43,14 +43,14 @@ class users {
         if (createUser) createStaff = await tblStaffs.create(newStaff)
 
         let nameImageCard = createStaff.null
-        await QRCode.toFile(`./qr/${nameImageCard}.png`, `${nameImageCard}`, {
+        await QRCode.toFile(`http://209.97.175.174/qr/${nameImageCard}.png`, `${nameImageCard}`, {
           color: {
             dark: '#000',
             light: '#FFF' //background
           }
         })
 
-        if (createStaff) updateStaff = await tblStaffs.update({ cardImage: `./qr/${nameImageCard}.png` }, { where: { userId: createStaff.userId } })
+        if (createStaff) updateStaff = await tblStaffs.update({ cardImage: `http://209.97.175.174/qr/${nameImageCard}.png` }, { where: { userId: createStaff.userId } })
 
         if (updateStaff) findNew = await tblUsers.findByPk(createStaff.userId, { include: [{ model: tblStaffs }] })
 
@@ -68,15 +68,15 @@ class users {
         if (createUser) createMember = await tblMembers.create(newMember)
 
         let nameImageCard = createMember.null
-        await QRCode.toFile(`./qr/${nameImageCard}.png`, `${nameImageCard}`, {
+        await QRCode.toFile(`http://209.97.175.174/qr/${nameImageCard}.png`, `${nameImageCard}`, {
           color: {
             dark: '#000',
             light: '#FFF' //background
           }
         })
 
-        // if (createMember) updateMember = await tblMembers.update({ cardImage: `./qr/${nameImageCard}.png` }, { where: { userId: createMember.userId } })
-        if (createMember) updateMember = await tblMembers.update({ cardImage: `./qr/${nameImageCard}.png` }, { where: { userId: createMember.userId } })
+        // if (createMember) updateMember = await tblMembers.update({ cardImage: `http://209.97.175.174/qr/${nameImageCard}.png` }, { where: { userId: createMember.userId } })
+        if (createMember) updateMember = await tblMembers.update({ cardImage: `http://209.97.175.174/qr/${nameImageCard}.png` }, { where: { userId: createMember.userId } })
 
         if (updateMember) findNew = await tblUsers.findByPk(createMember.userId, { include: [{ model: tblMembers, include: [{ model: tblPackageMemberships }] }] })
       }
@@ -327,7 +327,7 @@ class users {
   static async importExcel(req, res) {
     try {
       const data = excelToJson({
-        sourceFile: `./${req.file.path}`,
+        sourceFile: `http://209.97.175.174/${req.file.path}`,
         sheets: [{
           name: 'member',
           header: {
@@ -392,123 +392,6 @@ class users {
         }]
       })
 
-      // Member
-      if (data.member.length > 0) {
-        await data.member.forEach(async element => {
-          try {
-            let createMember, updateMember
-
-            let newUser = {
-              fullname: element.namaLengkap,
-              nickname: element.namaPanggilan,
-              noKtp: String(element.noKtp),
-              avatar: "../asset/icon_user.png",
-              dateOfBirth: new Date(element.tanggalLahir),
-              email: element.email,
-              phone: element.nomorHp,
-              gender: element.kelamin,
-              igAccount: element.akunIg,
-              haveWhatsapp: element.adaWhatsapp.toLowerCase() === 'iya' ? 1 : 0,
-
-              roleId: 4,
-              flagActive: 1,
-
-              username: element.username,
-              password: hash('12345'),
-            }
-
-            let createUser = await tblUsers.create(newUser)
-
-            let newMember = {
-              memberId: element.idMember,
-              userId: createUser.null,
-              activeDate: element.tanggalAktifasiMember,
-              activeExpired: element.tanggalKadarluasaMember,
-              ptSession: element.sesiPT || 0,
-              cardImage: "",
-              packageMembershipId: element.paketMembership
-            }
-
-            if (createUser) createMember = await tblMembers.create(newMember)
-
-            let nameImageCard = element.idMember
-
-            await QRCode.toFile(`./qr/${nameImageCard}.png`, `${nameImageCard}`, {
-              color: {
-                dark: '#000',
-                light: '#FFF' //background
-              }
-            })
-    
-            // if (createMember) updateMember = await tblMembers.update({ cardImage: `./qr/${createMember.null}.png` }, { where: { memberId: createMember.null } })
-            if (createMember) updateMember = await tblMembers.update({ cardImage: `./qr/${nameImageCard}.png` }, { where: { memberId: nameImageCard } })
-    
-
-          } catch (Error) {
-            console.log(Error)
-          }
-        });
-      }
-
-      // Staff
-      if (data.staff.length > 0) {
-        await data.staff.forEach(async element => {
-          try {
-            let createStaff, updateStaff
-
-            let newUser = {
-              fullname: element.namaLengkap,
-              nickname: element.namaPanggilan,
-              noKtp: String(element.noKtp),
-              avatar: element.avatar || "../asset/icon_user.png",
-              dateOfBirth: new Date(element.tanggalLahir),
-              email: element.email,
-              phone: element.nomorHp,
-              gender: element.kelamin,
-              igAccount: element.akunIg,
-              haveWhatsapp: element.adaWhatsapp.toLowerCase() === 'iya' ? 1 : 0,
-
-              flagActive: 1,
-
-              username: element.username,
-              password: hash('12345'),
-            }
-
-            if (element.role.toLowerCase() === 'admin') {
-              newUser.roleId = 2
-            } else if (element.role.toLowerCase() === 'staff') {
-              newUser.roleId = 3
-            }
-
-            let createUser = await tblUsers.create(newUser)
-
-            let newStaff = {
-              staffId: element.idStaff,
-              userId: createUser.null,
-              isPermanent: element.jamMasuk.toLowerCase() === "shift" ? 0 : 1,
-              positionId: element.position.toLowerCase() === "pt" ? 3 : 2,
-              available: 1
-            }
-
-            if (createUser) createStaff = await tblStaffs.create(newStaff)
-
-            let nameImageCard = createStaff.null
-
-            await QRCode.toFile(`./qr/${nameImageCard}.png`, `${nameImageCard}`, {
-              color: {
-                dark: '#000',
-                light: '#FFF' //background
-              }
-            })
-    
-            if (createStaff) updateStaff = await tblStaffs.update({ cardImage: `./qr/${nameImageCard}.png` }, { where: { userId: createStaff.userId } })
-
-          } catch (Error) {
-            console.log(Error)
-          }
-        })
-      }
-
       // Package
       if (data.package.length > 0) {
         let kategori = await tblCategoryMemberships.findAll()
@@ -547,6 +430,123 @@ class users {
 
             let createPackage = await tblPackageMemberships.create(newData)
 
+
+          } catch (Error) {
+            console.log(Error)
+          }
+        })
+      }
+
+      // Member
+      if (data.member.length > 0) {
+        await data.member.forEach(async element => {
+          try {
+            let createMember, updateMember
+
+            let newUser = {
+              fullname: element.namaLengkap,
+              nickname: element.namaPanggilan,
+              noKtp: String(element.noKtp),
+              avatar: ".http://209.97.175.174/asset/icon_user.png",
+              dateOfBirth: new Date(element.tanggalLahir),
+              email: element.email,
+              phone: element.nomorHp,
+              gender: element.kelamin,
+              igAccount: element.akunIg,
+              haveWhatsapp: element.adaWhatsapp.toLowerCase() === 'iya' ? 1 : 0,
+
+              roleId: 4,
+              flagActive: 1,
+
+              username: element.username,
+              password: hash('12345'),
+            }
+
+            let createUser = await tblUsers.create(newUser)
+
+            let newMember = {
+              memberId: element.idMember,
+              userId: createUser.null,
+              activeDate: element.tanggalAktifasiMember,
+              activeExpired: element.tanggalKadarluasaMember,
+              ptSession: element.sesiPT || 0,
+              cardImage: "",
+              packageMembershipId: element.paketMembership
+            }
+
+            if (createUser) createMember = await tblMembers.create(newMember)
+
+            let nameImageCard = element.idMember
+
+            await QRCode.toFile(`http://209.97.175.174/qr/${nameImageCard}.png`, `${nameImageCard}`, {
+              color: {
+                dark: '#000',
+                light: '#FFF' //background
+              }
+            })
+    
+            // if (createMember) updateMember = await tblMembers.update({ cardImage: `http://209.97.175.174/qr/${createMember.null}.png` }, { where: { memberId: createMember.null } })
+            if (createMember) updateMember = await tblMembers.update({ cardImage: `http://209.97.175.174/qr/${nameImageCard}.png` }, { where: { memberId: nameImageCard } })
+    
+
+          } catch (Error) {
+            console.log(Error)
+          }
+        });
+      }
+
+      // Staff
+      if (data.staff.length > 0) {
+        await data.staff.forEach(async element => {
+          try {
+            let createStaff, updateStaff
+
+            let newUser = {
+              fullname: element.namaLengkap,
+              nickname: element.namaPanggilan,
+              noKtp: String(element.noKtp),
+              avatar: element.avatar || ".http://209.97.175.174/asset/icon_user.png",
+              dateOfBirth: new Date(element.tanggalLahir),
+              email: element.email,
+              phone: element.nomorHp,
+              gender: element.kelamin,
+              igAccount: element.akunIg,
+              haveWhatsapp: element.adaWhatsapp.toLowerCase() === 'iya' ? 1 : 0,
+
+              flagActive: 1,
+
+              username: element.username,
+              password: hash('12345'),
+            }
+
+            if (element.role.toLowerCase() === 'admin') {
+              newUser.roleId = 2
+            } else if (element.role.toLowerCase() === 'staff') {
+              newUser.roleId = 3
+            }
+
+            let createUser = await tblUsers.create(newUser)
+
+            let newStaff = {
+              staffId: element.idStaff,
+              userId: createUser.null,
+              isPermanent: element.jamMasuk.toLowerCase() === "shift" ? 0 : 1,
+              positionId: element.position.toLowerCase() === "pt" ? 3 : 2,
+              available: 1
+            }
+
+            if (createUser) createStaff = await tblStaffs.create(newStaff)
+
+            let nameImageCard = createStaff.null
+
+            await QRCode.toFile(`http://209.97.175.174/qr/${nameImageCard}.png`, `${nameImageCard}`, {
+              color: {
+                dark: '#000',
+                light: '#FFF' //background
+              }
+            })
+    
+            if (createStaff) updateStaff = await tblStaffs.update({ cardImage: `http://209.97.175.174/qr/${nameImageCard}.png` }, { where: { userId: createStaff.userId } })
 
           } catch (Error) {
             console.log(Error)
