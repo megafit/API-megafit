@@ -34,13 +34,15 @@ module.exports = (sequelize, DataTypes) => {
     tblUsers.hasMany(models.tblClassPts, { foreignKey: "userId" })
     tblUsers.hasMany(models.tblCardPayments, { foreignKey: "userId" })
     tblUsers.hasMany(models.tblPrivileges, { foreignKey: "userId" })
-    tblUsers.hasMany(models.tblCheckinCheckouts, { foreignKey: "userId", as: "member"  })
-    tblUsers.hasMany(models.tblCheckinCheckouts, { foreignKey: "adminIdCheckin", as:"admin_checkin" })
-    tblUsers.hasMany(models.tblCheckinCheckouts, { foreignKey: "adminIdCheckout", as:"admin_checkout"  })
+    tblUsers.hasMany(models.tblCheckinCheckouts, { foreignKey: "userId", as: "member" })
+    tblUsers.hasMany(models.tblCheckinCheckouts, { foreignKey: "adminIdCheckin", as: "admin_checkin" })
+    tblUsers.hasMany(models.tblCheckinCheckouts, { foreignKey: "adminIdCheckout", as: "admin_checkout" })
     tblUsers.hasMany(models.tblTransactions, { foreignKey: "userId" })
     tblUsers.hasMany(models.tblTransactions, { foreignKey: "adminId" })
     tblUsers.hasMany(models.tblMemberships, { foreignKey: "userId" })
     tblUsers.hasMany(models.tblMemberships, { foreignKey: "ptId" })
+    tblUsers.hasMany(models.tblHistoryPTs, { foreignKey: "userId", as: "user" })
+    tblUsers.hasMany(models.tblHistoryPTs, { foreignKey: "ptId", as: "pt" })
   };
   return tblUsers;
 };

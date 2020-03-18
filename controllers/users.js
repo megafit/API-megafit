@@ -4,6 +4,7 @@ const { sign, verify } = require("../helpers/jwt")
 const QRCode = require('qrcode')
 const Op = require('sequelize').Op
 const excelToJson = require('convert-excel-to-json');
+const { BaseURL } = require('./CONSTANTA')
 
 class users {
 
@@ -17,7 +18,7 @@ class users {
         fullname: req.body.fullname,
         nickname: req.body.nickname,
         noKtp: req.body.noKtp,
-        avatar: req.file ? req.file.path : "http://209.97.175.174/asset/icon_user.png",
+        avatar: req.file ? req.file.path : `/uploads/icon_user.png`,
         dateOfBirth: new Date(req.body.dateOfBirth),
         email: req.body.email,
         phone: req.body.phone,
@@ -43,14 +44,14 @@ class users {
         if (createUser) createStaff = await tblStaffs.create(newStaff)
 
         let nameImageCard = createStaff.null
-        await QRCode.toFile(`http://209.97.175.174/qr/${nameImageCard}.png`, `${nameImageCard}`, {
+        await QRCode.toFile(`./qr/${nameImageCard}.png`, `${nameImageCard}`, {
           color: {
             dark: '#000',
             light: '#FFF' //background
           }
         })
 
-        if (createStaff) updateStaff = await tblStaffs.update({ cardImage: `http://209.97.175.174/qr/${nameImageCard}.png` }, { where: { userId: createStaff.userId } })
+        if (createStaff) updateStaff = await tblStaffs.update({ cardImage: `/qr/${nameImageCard}.png` }, { where: { userId: createStaff.userId } })
 
         if (updateStaff) findNew = await tblUsers.findByPk(createStaff.userId, { include: [{ model: tblStaffs }] })
 
@@ -68,15 +69,14 @@ class users {
         if (createUser) createMember = await tblMembers.create(newMember)
 
         let nameImageCard = createMember.null
-        await QRCode.toFile(`http://209.97.175.174/qr/${nameImageCard}.png`, `${nameImageCard}`, {
+        await QRCode.toFile(`./qr/${nameImageCard}.png`, `${nameImageCard}`, {
           color: {
             dark: '#000',
             light: '#FFF' //background
           }
         })
 
-        // if (createMember) updateMember = await tblMembers.update({ cardImage: `http://209.97.175.174/qr/${nameImageCard}.png` }, { where: { userId: createMember.userId } })
-        if (createMember) updateMember = await tblMembers.update({ cardImage: `http://209.97.175.174/qr/${nameImageCard}.png` }, { where: { userId: createMember.userId } })
+        if (createMember) updateMember = await tblMembers.update({ cardImage: `/qr/${nameImageCard}.png` }, { where: { userId: createMember.userId } })
 
         if (updateMember) findNew = await tblUsers.findByPk(createMember.userId, { include: [{ model: tblMembers, include: [{ model: tblPackageMemberships }] }] })
       }
@@ -131,64 +131,62 @@ class users {
     let lockerKey = null, checkId = null
 
     try {
-      if (req.query) {
-        if (req.query.idMember) {
-          let detailMember = await tblUsers.findOne({
+      if (req.query.idMember) {
+        let detailMember = await tblUsers.findOne({
+          // where: { username: req.body.username },  bila nyari username juga
+          include: [{ model: tblMembers, where: { memberId: req.query.idMember } }]
+        })
+
+        //bila members
+        if (detailMember) {
+          //cek sudah expired atau belum
+          if (new Date(detailMember.tblMember.activeExpired) < new Date()) {
+            await tblUsers.update({ flagActive: false }, { where: { userId: detailMember.userId } })
+            await tblMembers.update({ ptSession: 0 }, { where: { userId: detailMember.userId } })
+
+            detailMember.flagActive = 0
+          }
+
+          let checkLockerkey = await tblCheckinCheckouts.findOne({ where: { userId: detailMember.userId, lockerKey: { [Op.ne]: 0 } } })
+
+          if (checkLockerkey != null) {
+            lockerKey = checkLockerkey.lockerKey
+            checkId = checkLockerkey.checkId
+          }
+
+          res.status(200).json({ message: "Success33", data: detailMember, lockerKey, checkId })
+
+        } else {
+
+          let detailUser = await tblUsers.findByPk(req.params.id, {
             // where: { username: req.body.username },  bila nyari username juga
-            include: [{ model: tblMembers, where: { memberId: req.query.idMember } }]
+            include: [{ model: tblStaffs }, { model: tblMembers }]
           })
 
           //bila members
-          if (detailMember) {
-            //cek sudah expired atau belum
-            if (new Date(detailMember.tblMember.activeExpired) < new Date()) {
-              await tblUsers.update({ flagActive: false }, { where: { userId: detailMember.userId } })
-              await tblMembers.update({ ptSession: 0 }, { where: { userId: detailMember.userId } })
+          if (detailUser) {
+            if (detailUser.tblMember) {
+              //cek sudah expired atau belum
+              if (new Date(detailUser.tblMember.activeExpired) < new Date()) {
+                await tblUsers.update({ flagActive: false }, { where: { userId: detailUser.userId } })
+                await tblMembers.update({ ptSession: 0 }, { where: { userId: detailUser.userId } })
 
-              detailMember.flagActive = 0
-            }
-
-            let checkLockerkey = await tblCheckinCheckouts.findOne({ where: { userId: detailMember.userId, lockerKey: { [Op.ne]: 0 } } })
-
-            if (checkLockerkey != null) {
-              lockerKey = checkLockerkey.lockerKey
-              checkId = checkLockerkey.checkId
-            }
-
-            res.status(200).json({ message: "Success33", data: detailMember, lockerKey, checkId })
-
-          } else {
-
-            let detailUser = await tblUsers.findByPk(req.params.id, {
-              // where: { username: req.body.username },  bila nyari username juga
-              include: [{ model: tblStaffs }, { model: tblMembers }]
-            })
-
-            //bila members
-            if (detailUser) {
-              if (detailUser.tblMember) {
-                //cek sudah expired atau belum
-                if (new Date(detailUser.tblMember.activeExpired) < new Date()) {
-                  await tblUsers.update({ flagActive: false }, { where: { userId: detailUser.userId } })
-                  await tblMembers.update({ ptSession: 0 }, { where: { userId: detailUser.userId } })
-
-                  detailUser.flagActive = 0
-                }
-
-                let checkLockerkey = await tblCheckinCheckouts.findOne({ where: { userId: detailUser.userId, lockerKey: { [Op.ne]: 0 } } })
-
-                if (checkLockerkey != null) {
-                  lockerKey = checkLockerkey.lockerKey
-                  checkId = checkLockerkey.checkId
-                }
+                detailUser.flagActive = 0
               }
-              res.status(200).json({ message: "Success33", data: detailUser, lockerKey, checkId })
-            } else {
-              throw "Data not found"
-            }
-          }
 
+              let checkLockerkey = await tblCheckinCheckouts.findOne({ where: { userId: detailUser.userId, lockerKey: { [Op.ne]: 0 } } })
+
+              if (checkLockerkey != null) {
+                lockerKey = checkLockerkey.lockerKey
+                checkId = checkLockerkey.checkId
+              }
+            }
+            res.status(200).json({ message: "Success33", data: detailUser, lockerKey, checkId })
+          } else {
+            throw "Data not found"
+          }
         }
+
       } else {
         console.log(req.params.id)
         let detailUser = await tblUsers.findByPk(req.params.id, {
@@ -261,7 +259,7 @@ class users {
 
   static async findAll(req, res) {
     try {
-      let data = await tblUsers.findAll({ include: [{ model: tblStaffs }, { model: tblMembers }, { model: tblRoles }] })
+      let data = await tblUsers.findAll({ include: [{ model: tblStaffs }, { model: tblMembers, include: [{ model: tblPackageMemberships }] }, { model: tblRoles }] })
 
       if (data) res.status(200).json({ message: "Success", totalRecord: data.length, data })
     } catch (Error) {
@@ -327,7 +325,7 @@ class users {
   static async importExcel(req, res) {
     try {
       const data = excelToJson({
-        sourceFile: `http://209.97.175.174/${req.file.path}`,
+        sourceFile: `/${req.file.path}`,
         sheets: [{
           name: 'member',
           header: {
@@ -428,7 +426,7 @@ class users {
               newData.categoryMembershipId = createPackage.null
             }
 
-            let createPackage = await tblPackageMemberships.create(newData)
+            await tblPackageMemberships.create(newData)
 
 
           } catch (Error) {
@@ -447,7 +445,7 @@ class users {
               fullname: element.namaLengkap,
               nickname: element.namaPanggilan,
               noKtp: String(element.noKtp),
-              avatar: ".http://209.97.175.174/asset/icon_user.png",
+              avatar: "./asset/icon_user.png",
               dateOfBirth: new Date(element.tanggalLahir),
               email: element.email,
               phone: element.nomorHp,
@@ -478,16 +476,14 @@ class users {
 
             let nameImageCard = element.idMember
 
-            await QRCode.toFile(`http://209.97.175.174/qr/${nameImageCard}.png`, `${nameImageCard}`, {
+            await QRCode.toFile(`./qr/${nameImageCard}.png`, `${nameImageCard}`, {
               color: {
                 dark: '#000',
                 light: '#FFF' //background
               }
             })
-    
-            // if (createMember) updateMember = await tblMembers.update({ cardImage: `http://209.97.175.174/qr/${createMember.null}.png` }, { where: { memberId: createMember.null } })
-            if (createMember) updateMember = await tblMembers.update({ cardImage: `http://209.97.175.174/qr/${nameImageCard}.png` }, { where: { memberId: nameImageCard } })
-    
+
+            if (createMember) updateMember = await tblMembers.update({ cardImage: `/qr/${nameImageCard}.png` }, { where: { memberId: nameImageCard } })
 
           } catch (Error) {
             console.log(Error)
@@ -505,7 +501,7 @@ class users {
               fullname: element.namaLengkap,
               nickname: element.namaPanggilan,
               noKtp: String(element.noKtp),
-              avatar: element.avatar || ".http://209.97.175.174/asset/icon_user.png",
+              avatar: element.avatar || "./asset/icon_user.png",
               dateOfBirth: new Date(element.tanggalLahir),
               email: element.email,
               phone: element.nomorHp,
@@ -539,14 +535,14 @@ class users {
 
             let nameImageCard = createStaff.null
 
-            await QRCode.toFile(`http://209.97.175.174/qr/${nameImageCard}.png`, `${nameImageCard}`, {
+            await QRCode.toFile(`./qr/${nameImageCard}.png`, `${nameImageCard}`, {
               color: {
                 dark: '#000',
                 light: '#FFF' //background
               }
             })
-    
-            if (createStaff) updateStaff = await tblStaffs.update({ cardImage: `http://209.97.175.174/qr/${nameImageCard}.png` }, { where: { userId: createStaff.userId } })
+
+            if (createStaff) updateStaff = await tblStaffs.update({ cardImage: `/qr/${nameImageCard}.png` }, { where: { userId: createStaff.userId } })
 
           } catch (Error) {
             console.log(Error)

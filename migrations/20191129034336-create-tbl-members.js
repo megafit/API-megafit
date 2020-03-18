@@ -27,6 +27,9 @@ module.exports = {
       activeDate: {
         type: Sequelize.DATE
       },
+      lastCheckin: {
+        type: Sequelize.DATE
+      },
       packageMembershipId: {
         type: Sequelize.STRING(11),
         references: {

@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     ptSession: DataTypes.INTEGER,
     cardImage: DataTypes.STRING,
     activeDate: DataTypes.DATE,
+    lastCheckin: DataTypes.DATE,
     packageMembershipId: DataTypes.STRING
   }, {});
   tblMembers.removeAttribute('id');

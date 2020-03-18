@@ -24,7 +24,7 @@ class checkin {
       }
 
       let userCheckin = await tblCheckinCheckouts.create(newUserCheckin)
-
+      await tblMembers.update({ lastCheckin: new Date() }, { where: {userId: req.body.userId} })
       res.status(201).json({ message: "Success", data: userCheckin })
       // }
 
@@ -60,6 +60,7 @@ class checkin {
       res.status(500).json({ Error })
     }
   }
+
 
   static async update(req, res) {
     try {

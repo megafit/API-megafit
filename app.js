@@ -12,6 +12,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(cors())
 app.use('/qr', express.static('qr'))
+app.use('/uploads', express.static('uploads'))
 
 app.use(morgan('dev'))
 app.use('/', route)
