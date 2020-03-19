@@ -4,7 +4,6 @@ const { sign, verify } = require("../helpers/jwt")
 const QRCode = require('qrcode')
 const Op = require('sequelize').Op
 const excelToJson = require('convert-excel-to-json');
-const { BaseURL } = require('./CONSTANTA')
 
 class users {
 
