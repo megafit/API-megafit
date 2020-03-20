@@ -5,7 +5,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       primaryKey: true
     },
-    categoryMembership: DataTypes.STRING
+    categoryMembership: DataTypes.STRING,
+    isMembership: DataTypes.BOOLEAN,
   }, {});
   tblCategoryMemberships.associate = function (models) {
     // associations can be defined here
