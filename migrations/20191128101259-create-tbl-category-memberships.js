@@ -10,9 +10,6 @@ module.exports = {
       },
       categoryMembership: {
         type: Sequelize.STRING(100)
-      },      
-      isMembership: {
-        type: Sequelize.BOOLEAN
       },
       createdAt: {
         allowNull: false,

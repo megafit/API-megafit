@@ -6,11 +6,12 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true
     },
     categoryMembership: DataTypes.STRING,
-    isMembership: DataTypes.BOOLEAN,
+    mainPackageId: DataTypes.INTEGER
   }, {});
   tblCategoryMemberships.associate = function (models) {
     // associations can be defined here
-    tblCategoryMemberships.hasMany(models.tblCategoryMemberships, { foreignKey: "categoryMembershipId" })
+    tblCategoryMemberships.hasMany(models.tblSubCategoryMemberships, { foreignKey: "categoryMembershipId" })
+    tblCategoryMemberships.belongsTo(models.tblSubCategoryMemberships, { foreignKey: "mainPackageId" })
   };
   return tblCategoryMemberships;
 };

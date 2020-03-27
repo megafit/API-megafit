@@ -6,15 +6,10 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true
     },
     package: DataTypes.STRING,
-    categoryMembershipId: DataTypes.INTEGER,
+    subCategoryMembershipId: DataTypes.INTEGER,
     times: DataTypes.INTEGER,
     price: DataTypes.INTEGER,
-    startPromo: DataTypes.DATE,
-    endPromo: DataTypes.DATE,
-    access: DataTypes.STRING,
-    adminFee: DataTypes.INTEGER,
     activeMember: DataTypes.INTEGER,
-    flagActive: DataTypes.BOOLEAN,
     sessionPtHours: DataTypes.INTEGER
   }, {});
 
@@ -22,9 +17,10 @@ module.exports = (sequelize, DataTypes) => {
 
   tblPackageMemberships.associate = function (models) {
     // associations can be defined here
-    tblPackageMemberships.belongsTo(models.tblCategoryMemberships, { foreignKey: "categoryMembershipId" })
+    tblPackageMemberships.belongsTo(models.tblSubCategoryMemberships, { foreignKey: "subCategoryMembershipId" })
     tblPackageMemberships.hasMany(models.tblMemberships, { foreignKey: "packageMembershipId" })
     tblPackageMemberships.hasMany(models.tblMembers, { foreignKey: "packageMembershipId" })
+    tblPackageMemberships.hasOne(models.tblSubCategoryMemberships, { foreignKey: "mainPackageId" })
   };
   return tblPackageMemberships;
 };

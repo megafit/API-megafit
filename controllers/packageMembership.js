@@ -1,26 +1,54 @@
-const { tblPackageMemberships, tblCategoryMemberships } = require("../models")
+const { tblPackageMemberships, tblSubCategoryMemberships, tblCategoryMemberships } = require("../models")
 
 class packageMembership {
 
   static async create(req, res) {
     try {
-      let newPackageMembership = {
-        packageMembershipId: req.body.packageMembershipId,
-        package: req.body.package,
+      let subCategoryMemberships = await tblSubCategoryMemberships.create({
+        subCategoryMembership: req.body.package,
         categoryMembershipId: req.body.categoryMembershipId,
-        times: req.body.times,
-        price: req.body.price,
         startPromo: req.body.startPromo,
         endPromo: req.body.endPromo,
         access: req.body.access,
         adminFee: req.body.adminFee,
-        activeMember: 0,
-        flagActive: 1,
-      }
+        activeFlag: 1,
+      })
 
-      if (req.body.packageMembershipId === "2") newPackageMembership.sessionPtHours = req.body.sessionPtHours
+      let newPackageMembership = {
+        packageMembershipId: req.body.packageMembershipId,
+        package: req.body.package,
+        subCategoryMembershipId: subCategoryMemberships.id,
+        price: req.body.price,
+        activeMember: 0,
+      }
+      if (Number(req.body.packageMembershipId) === 2) newPackageMembership.sessionPtHours = req.body.sessionPtHours
+      else newPackageMembership.times = req.body.times
 
       let createPackageMember = await tblPackageMemberships.create(newPackageMembership)
+      // console.log(req.body.grosirPrice)
+      // let grosirPrice = JSON.parse(req.body.grosirPrice)
+
+      //       var newJson = req.body.grosirPrice.replace(/([a-zA-Z0-9]+?):/g, '"$1":');
+      //       console.log(newJson)
+      //             newJson = newJson.replace(/'/g, '"');
+      //                   var data = JSON.parse(newJson);
+      //       console.log(data)
+
+      // console.log(data)
+
+      grosirPrice.forEach(async element => {
+        let newPackageMembership = {
+          packageMembershipId: element.id,
+          package: req.body.package,
+          subCategoryMembershipId: subCategoryMemberships.id,
+          price: element.price,
+          activeMember: 0,
+        }
+        if (Number(req.body.packageMembershipId) === 2) newPackageMembership.sessionPtHours = element.sessionPtHours
+        else newPackageMembership.times = element.times
+
+        await tblPackageMemberships.create(newPackageMembership)
+      });
 
       res.status(201).json({ message: "Success", data: createPackageMember })
     } catch (Error) {
@@ -32,7 +60,7 @@ class packageMembership {
   static async findAll(req, res) {
     try {
       let data = await tblPackageMemberships.findAll({
-        include: [{ model: tblCategoryMemberships }],
+        include: [{ model: tblSubCategoryMemberships, include: [{ model: tblCategoryMemberships }] }],
         order: [
           ["times", "ASC"],
           ["packageMembershipId", "ASC"],
@@ -73,7 +101,7 @@ class packageMembership {
         access: req.body.access,
         adminFee: req.body.adminFee,
       }
-      
+
       let updatePackageMembership = await tblPackageMemberships.update(newPackageMembership, { where: { packageMembershipId: req.params.id } })
       let dataReturn = await tblPackageMemberships.findByPk(req.params.id, { include: [{ model: tblCategoryMemberships }] })
 

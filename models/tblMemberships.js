@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   tblMemberships.associate = function (models) {
     // associations can be defined here
-    tblMemberships.belongsTo(models.tblCategoryMemberships, { foreignKey: "categoryMembershipId" })
+    tblMemberships.belongsTo(models.tblPackageMemberships, { foreignKey: "packageMembershipId" })
     tblMemberships.belongsTo(models.tblUsers, { foreignKey: "userId" })
     tblMemberships.belongsTo(models.tblUsers, { foreignKey: "ptId" })
   };

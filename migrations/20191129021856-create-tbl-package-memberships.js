@@ -10,11 +10,11 @@ module.exports = {
       package: {
         type: Sequelize.STRING(150)
       },
-      categoryMembershipId: {
+      subCategoryMembershipId: {
         type: Sequelize.INTEGER(11),
         references: {
-          model: 'tblCategoryMemberships',
-          key: 'categoryMembershipId'
+          model: 'tblSubCategoryMemberships',
+          key: 'subCategoryMembershipId'
         },
         onDelete: 'SET NULL',
       },
@@ -24,23 +24,8 @@ module.exports = {
       price: {
         type: Sequelize.INTEGER(10)
       },
-      startPromo: {
-        type: Sequelize.DATE
-      },
-      endPromo: {
-        type: Sequelize.DATE
-      },
-      access: {
-        type: Sequelize.STRING(100)
-      },
-      adminFee: {
-        type: Sequelize.INTEGER(11)
-      },
       activeMember: {
         type: Sequelize.INTEGER(4)
-      },
-      flagActive: {
-        type: Sequelize.BOOLEAN
       },
       sessionPtHours: {
         type: Sequelize.INTEGER(3)
