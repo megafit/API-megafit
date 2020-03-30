@@ -1,54 +1,20 @@
-const { tblPackageMemberships, tblSubCategoryMemberships, tblCategoryMemberships } = require("../models")
+const { tblPackageMemberships, tblSubCategoryMemberships } = require("../models")
 
 class packageMembership {
 
   static async create(req, res) {
     try {
-      let subCategoryMemberships = await tblSubCategoryMemberships.create({
-        subCategoryMembership: req.body.package,
-        categoryMembershipId: req.body.categoryMembershipId,
-        startPromo: req.body.startPromo,
-        endPromo: req.body.endPromo,
-        access: req.body.access,
-        adminFee: req.body.adminFee,
-        activeFlag: 1,
-      })
-
       let newPackageMembership = {
         packageMembershipId: req.body.packageMembershipId,
         package: req.body.package,
-        subCategoryMembershipId: subCategoryMemberships.id,
+        subCategoryMembershipId: req.body.subCategoryMembershipId,
         price: req.body.price,
         activeMember: 0,
       }
-      if (Number(req.body.packageMembershipId) === 2) newPackageMembership.sessionPtHours = req.body.sessionPtHours
+      if (Number(req.body.categoryMembershipId) === 2) newPackageMembership.sessionPtHours = req.body.sessionPtHours
       else newPackageMembership.times = req.body.times
 
       let createPackageMember = await tblPackageMemberships.create(newPackageMembership)
-      // console.log(req.body.grosirPrice)
-      // let grosirPrice = JSON.parse(req.body.grosirPrice)
-
-      //       var newJson = req.body.grosirPrice.replace(/([a-zA-Z0-9]+?):/g, '"$1":');
-      //       console.log(newJson)
-      //             newJson = newJson.replace(/'/g, '"');
-      //                   var data = JSON.parse(newJson);
-      //       console.log(data)
-
-      // console.log(data)
-
-      grosirPrice.forEach(async element => {
-        let newPackageMembership = {
-          packageMembershipId: element.id,
-          package: req.body.package,
-          subCategoryMembershipId: subCategoryMemberships.id,
-          price: element.price,
-          activeMember: 0,
-        }
-        if (Number(req.body.packageMembershipId) === 2) newPackageMembership.sessionPtHours = element.sessionPtHours
-        else newPackageMembership.times = element.times
-
-        await tblPackageMemberships.create(newPackageMembership)
-      });
 
       res.status(201).json({ message: "Success", data: createPackageMember })
     } catch (Error) {
@@ -60,7 +26,9 @@ class packageMembership {
   static async findAll(req, res) {
     try {
       let data = await tblPackageMemberships.findAll({
-        include: [{ model: tblSubCategoryMemberships, include: [{ model: tblCategoryMemberships }] }],
+        include: [{
+          model: tblSubCategoryMemberships,
+        }],
         order: [
           ["times", "ASC"],
           ["packageMembershipId", "ASC"],
@@ -77,7 +45,16 @@ class packageMembership {
 
   static async findOne(req, res) {
     try {
-      let data = await tblPackageMemberships.findByPk(req.params.id, { include: [{ model: tblCategoryMemberships }] })
+      let data = await tblPackageMemberships.findAll({
+        include: [{
+          model: tblSubCategoryMemberships,
+        }],
+        order: [
+          ["times", "ASC"],
+          ["packageMembershipId", "ASC"],
+          ["package", "DESC"]
+        ]
+      })
 
       if (data) res.status(200).json({ message: "Success", data })
       else throw "Data not found"
@@ -91,19 +68,16 @@ class packageMembership {
   static async update(req, res) {
     try {
       let newPackageMembership = {
-        packageMembershipId: req.body.packageMembershipId,
         package: req.body.package,
-        categoryMembershipId: req.body.categoryMembershipId,
-        times: req.body.times,
-        price: req.body.price,
-        startPromo: req.body.startPromo,
-        endPromo: req.body.endPromo,
-        access: req.body.access,
-        adminFee: req.body.adminFee,
+        subCategoryMembershipId: req.body.subCategoryMembershipId,
+        price: req.body.price
       }
+      if (Number(req.body.categoryMembershipId) === 2) newPackageMembership.sessionPtHours = req.body.sessionPtHours
+      else newPackageMembership.times = req.body.times
 
-      let updatePackageMembership = await tblPackageMemberships.update(newPackageMembership, { where: { packageMembershipId: req.params.id } })
-      let dataReturn = await tblPackageMemberships.findByPk(req.params.id, { include: [{ model: tblCategoryMemberships }] })
+      await tblPackageMemberships.update(newPackageMembership, { where: { packageMembershipId: req.params.id } })
+
+      let dataReturn = await tblPackageMemberships.findByPk(req.params.id, { include: [{ model: tblSubCategoryMemberships }] })
 
       if (updatePackageMembership) res.status(200).json({ message: "Success", data: dataReturn })
       else throw "Data not found"

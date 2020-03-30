@@ -34,6 +34,9 @@ module.exports = {
       activeFlag: {
         type: Sequelize.BOOLEAN
       },
+      isMainPackage: {
+        type: Sequelize.BOOLEAN
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

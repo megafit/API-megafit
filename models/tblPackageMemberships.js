@@ -20,7 +20,6 @@ module.exports = (sequelize, DataTypes) => {
     tblPackageMemberships.belongsTo(models.tblSubCategoryMemberships, { foreignKey: "subCategoryMembershipId" })
     tblPackageMemberships.hasMany(models.tblMemberships, { foreignKey: "packageMembershipId" })
     tblPackageMemberships.hasMany(models.tblMembers, { foreignKey: "packageMembershipId" })
-    tblPackageMemberships.hasOne(models.tblSubCategoryMemberships, { foreignKey: "mainPackageId" })
   };
   return tblPackageMemberships;
 };
