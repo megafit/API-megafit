@@ -258,7 +258,15 @@ class users {
 
   static async findAll(req, res) {
     try {
-      let data = await tblUsers.findAll({ include: [{ model: tblStaffs }, { model: tblMembers, include: [{ model: tblPackageMemberships }] }, { model: tblRoles }] })
+      let data
+      console.log(req.query)
+      if (req.query.only === 'member') {
+        data = await tblUsers.findAll({ include: [{ required: true, model: tblMembers, include: [{ model: tblPackageMemberships }] }, { model: tblRoles }] })
+      } else if (req.query.only === 'staff') {
+        data = await tblUsers.findAll({ where: { userId: { [Op.not]: 1 } }, include: [{ required: true, model: tblStaffs }, { model: tblRoles }] })
+      } else {
+        data = await tblUsers.findAll({ include: [{ model: tblStaffs }, { model: tblMembers, include: [{ model: tblPackageMemberships }] }, { model: tblRoles }] })
+      }
 
       if (data) res.status(200).json({ message: "Success", totalRecord: data.length, data })
     } catch (Error) {
