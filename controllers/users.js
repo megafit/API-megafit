@@ -91,7 +91,7 @@ class users {
   static async signin(req, res) {
     let detailUser, dataSend
     try {
-      let userLogin = await tblUsers.findOne({ where: { username: req.body.username } })
+      let userLogin = await tblUsers.findOne({ where: { username: req.body.username }, include: [{ model: tblStaffs }] })
       if (userLogin) {
         if (compare(req.body.password, userLogin.password)) {
           let token = sign({ userId: userLogin.userId })
@@ -112,7 +112,8 @@ class users {
           // } else {
           // 	dataSend.isAvailable = detailUser.tblStaff.available
           // }
-          res.status(200).json({ token, nickname: userLogin.nickname, fullname: userLogin.fullname, userId: userLogin.userId, roleId: userLogin.roleId })
+          console.log(userLogin)
+          res.status(200).json({ token, nickname: userLogin.nickname, fullname: userLogin.fullname, userId: userLogin.userId, roleId: userLogin.roleId, positionId: userLogin.tblStaff.positionId })
         } else {
           throw "Username/password invalid"
         }
@@ -315,14 +316,10 @@ class users {
 
   static async checkToken(req, res) {
     try {
-      let dataReturn = {
-        userId: req.user.userId,
-        roleId: req.user.roleId,
-        nickname: req.user.nickname,
-        fullname: req.user.fullname
-      }
+      let userLogin = await tblUsers.findOne({ where: { userId: req.user.userId }, include: [{ model: tblStaffs }] })
 
-      res.status(200).json({ message: "Success", data: dataReturn })
+      console.log(userLogin)
+      res.status(200).json({ nickname: userLogin.nickname, fullname: userLogin.fullname, userId: userLogin.userId, roleId: userLogin.roleId, positionId: userLogin.tblStaff.positionId })
     } catch (Error) {
       console.log(Error)
       res.status(500).json({ Error })

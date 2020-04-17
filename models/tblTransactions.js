@@ -5,24 +5,19 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       primaryKey: true
     },
-    salesInvoice: DataTypes.STRING,
+    methodPayment: DataTypes.STRING, //payment by (ovo, edc BCA, Transfer BCA, etc)
+    // fromBank: DataTypes.INTEGER,
+    memberId: DataTypes.INTEGER,
+    staffId: DataTypes.INTEGER,
     amount: DataTypes.INTEGER,
-    methodPayment: DataTypes.STRING,
-    fromBank: DataTypes.INTEGER,
-    toBank: DataTypes.INTEGER,
-    accountName: DataTypes.STRING,
-    accountNumber: DataTypes.STRING,
-    typeTransaction: DataTypes.STRING,
-    userId: DataTypes.INTEGER,
-    adminId: DataTypes.INTEGER,
+    admPrice: DataTypes.INTEGER,
     status: DataTypes.STRING
   }, {});
   tblTransactions.associate = function (models) {
     // associations can be defined here
-    tblTransactions.belongsTo(models.tblBanks, { foreignKey: "fromBank" })
-    tblTransactions.belongsTo(models.tblBanks, { foreignKey: "toBank" })
-    tblTransactions.belongsTo(models.tblUsers, { foreignKey: "userId" })
-    tblTransactions.belongsTo(models.tblUsers, { foreignKey: "adminId" })
+    // tblTransactions.belongsTo(models.tblBanks, { foreignKey: "fromBank" })
+    tblTransactions.belongsTo(models.tblUsers, { foreignKey: "memberId", as: "member" })
+    tblTransactions.belongsTo(models.tblUsers, { foreignKey: "staffId", as: "staff" })
   };
   return tblTransactions;
 };

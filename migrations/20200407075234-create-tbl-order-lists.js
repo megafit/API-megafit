@@ -1,38 +1,35 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('tblTransactions', {
-      transactionId: {
+    return queryInterface.createTable('tblOrderLists', {
+      id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER(11)
       },
-      methodPayment: {
-        type: Sequelize.STRING(100)
-      },
-      memberId: {
+      transactionId: {
         type: Sequelize.INTEGER(11),
         references: {
-          model: 'tblUsers',
-          key: 'userId'
+          model: 'tblTransactions',
+          key: 'transactionId'
         }
       },
-      staffId: {
-        type: Sequelize.INTEGER(11),
+      salesInvoice: {
+        type: Sequelize.STRING(50)
+      },
+      packageMembershipId: {
+        type: Sequelize.STRING(11),
         references: {
-          model: 'tblUsers',
-          key: 'userId'
+          model: 'tblPackageMemberships',
+          key: 'packageMembershipId'
         }
       },
-      amount: {
+      quantity: {
         type: Sequelize.INTEGER(10)
       },
-      admPrice: {
-        type: Sequelize.INTEGER(10)
-      },
-      status: {
-        type: Sequelize.STRING(80)
+      totalPrice: {
+        type: Sequelize.INTEGER(100)
       },
       createdAt: {
         allowNull: false,
@@ -45,6 +42,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('tblTransactions');
+    return queryInterface.dropTable('tblOrderLists');
   }
 };
