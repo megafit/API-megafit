@@ -11,7 +11,8 @@ module.exports = (sequelize, DataTypes) => {
     cardImage: DataTypes.STRING,
     activeDate: DataTypes.DATE,
     lastCheckin: DataTypes.DATE,
-    packageMembershipId: DataTypes.STRING
+    packageMembershipId: DataTypes.STRING,
+    hasConfirmTermAndCondition: DataTypes.BOOLEAN
   }, {});
   tblMembers.removeAttribute('id');
 
@@ -19,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     // associations can be defined here
     tblMembers.belongsTo(models.tblUsers, { foreignKey: "userId" })
     tblMembers.belongsTo(models.tblPackageMemberships, { foreignKey: "packageMembershipId" })
+    tblMembers.hasMany(models.tblDataSizeMembers, { foreignKey: 'memberId' })
   };
   return tblMembers;
 };

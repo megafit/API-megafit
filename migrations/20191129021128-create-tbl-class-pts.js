@@ -8,24 +8,31 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER(11)
       },
-      classId: {
-        type: Sequelize.INTEGER(11),
-        references: {
-          model: 'tblClasses',
-          key: 'classId'
-        },
-        onDelete: 'CASCADE',
-      },
-      userId: {
+      ptId: {
         type: Sequelize.INTEGER(11),
         references: {
           model: 'tblUsers',
-          key: 'userId'
+          key: 'ptId'
         },
         onDelete: 'SET NULL',
       },
-      classDate: {
-        type: Sequelize.DATE
+      time: {
+        type: Sequelize.TIME
+      },
+      date: {
+        type: Sequelize.INTEGER(3)
+      },
+      week: {
+        type: Sequelize.INTEGER(5)
+      },
+      month: {
+        type: Sequelize.INTEGER(3)
+      },
+      year: {
+        type: Sequelize.INTEGER(5)
+      },
+      linkZoom: {
+        type: Sequelize.STRING(255)
       },
       createdAt: {
         allowNull: false,

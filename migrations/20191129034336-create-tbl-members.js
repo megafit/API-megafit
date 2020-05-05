@@ -38,6 +38,9 @@ module.exports = {
         },
         onDelete: 'SET NULL',
       },
+      hasConfirmTermAndCondition: {
+        type: Sequelize.BOOLEAN
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

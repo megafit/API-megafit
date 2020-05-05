@@ -15,7 +15,6 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   tblClasses.associate = function (models) {
     // associations can be defined here
-    tblClasses.hasMany(models.tblClassPts, { foreignKey: "classId" })
   };
   return tblClasses;
 };

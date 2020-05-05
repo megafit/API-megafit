@@ -11,8 +11,16 @@ module.exports = {
       userId: {
         type: Sequelize.INTEGER
       },
-      ptId: {
-        type: Sequelize.INTEGER
+      classPtId: {
+        type: Sequelize.INTEGER(11),
+        references: {
+          model: 'tblClassPts',
+          key: 'classPtId'
+        },
+        onDelete: 'CASCADE',
+      },
+      catatan: {
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
