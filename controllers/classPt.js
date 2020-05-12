@@ -1,4 +1,4 @@
-const { tblClassPts, tblUsers, tblHistoryPTs } = require("../models")
+const { tblClassPts, tblUsers, tblHistoryPTs, tblMembers } = require("../models")
 const Op = require("sequelize").Op
 const { getWeek } = require('../helpers/getNumberOfWeek')
 
@@ -31,13 +31,13 @@ class classPts {
   static async findAll(req, res) {
     let data
     try {
-      if (req.query.all === "true") { //for option in home member //DONE
+      if (req.query.all === "true") { //for option in home member 
         let hour = Number(req.query.hour)
 
         if (hour < 10) hour = `0${hour}:00:00`
         else hour = `${hour}:00:00`
 
-        let dataClassPt = await tblClassPts.findAll({
+        data = await tblClassPts.findAll({
           where: {
             [Op.or]: [
               {
@@ -66,76 +66,10 @@ class classPts {
             ["time", "ASC"],
           ]
         })
-
-        let dataHistoryPt = await tblHistoryPTs.findAll({
-          include: [{
-            model: tblClassPts,
-            where: {
-              [Op.or]: [
-                { date: { [Op.gte]: req.query.date.slice(8, 10) }, week: getWeek(req.query.date), year: req.query.date.slice(0, 4) },
-                { week: { [Op.gte]: getWeek(req.query.date) + 1 }, year: { [Op.gte]: req.query.date.slice(0, 4) } }
-              ]
-            },
-            include: [{ model: tblUsers }],
-            order: [
-              ["year", "ASC"],
-              ["month", "ASC"],
-              ["week", "ASC"],
-              ["date", "ASC"],
-              ["time", "ASC"],
-            ]
-          }],
-
-        })
-
-        data = []
-        await dataClassPt.forEach(async element => {
-          let available = await dataHistoryPt.find(el => element.classPtId === el.classPtId)
-          if (!available) data.push(element)
-        });
-
-      } else if (req.query.date) {
-        let hour = Number(req.query.hour)
-
-        if (hour < 10) hour = `0${hour}:00:00`
-        else hour = `${hour}:00:00`
-
-        data = await tblHistoryPTs.findAll({
-          include: [{
-            model: tblClassPts,
-            where: {
-              [Op.or]: [
-                {
-                  [Op.and]: [
-                    { time: { [Op.gt]: hour } },
-                    { date: { [Op.gte]: Number(req.query.date.slice(8, 10)) } },
-                    { week: getWeek(req.query.date) },
-                    { year: { [Op.gte]: req.query.date.slice(0, 4) } }
-                  ]
-                },
-                {
-                  [Op.and]: [
-                    { date: { [Op.gt]: Number(req.query.date.slice(8, 10)) } },
-                    { week: { [Op.gte]: getWeek(req.query.date) } },
-                    { year: { [Op.gte]: req.query.date.slice(0, 4) } }
-                  ]
-                }
-              ]
-            },
-            include: [{ model: tblUsers }],
-          }],
-          // order: [["id", "ASC"]]
-        })
-        console.log("MASUK")
-        await data.sort(compareTime)
-        await data.sort(compareDate)
-        await data.sort(compareWeek)
-        await data.sort(compareMonth)
-        await data.sort(compareYear)
       } else {
         data = await tblClassPts.findAll({
-          where: { week: req.query.week, year: req.query.year },
-          include: [{ model: tblUsers }],
+          where: { ptId: req.user.userId, week: req.query.week, year: req.query.year },
+          include: [{ model: tblUsers }, { model: tblHistoryPTs, include: [{ model: tblUsers }] }],
           order: [
             ["year", "ASC"],
             ["month", "ASC"],
@@ -212,6 +146,10 @@ class classPts {
       let dataReturn = await tblHistoryPTs.findByPk(joinPtClass.null)
 
       res.status(200).json({ message: "Success", data: dataReturn })
+
+      let member = await tblMembers.findOne({ where: { userId: req.user.userId } })
+      await tblMembers.update({ ptSession: member.ptSession - 1 }, { where: { userId: req.user.userId } })
+
     } catch (Error) {
       console.log(Error)
       if (Error === "Data not found") res.status(400).json({ Error })
@@ -224,6 +162,9 @@ class classPts {
       await tblHistoryPTs.destroy({ where: { id: req.params.id } })
 
       res.status(200).json({ message: "Success", idDeleted: req.params.id })
+
+      let member = await tblMembers.findOne({ where: { userId: req.user.userId } })
+      await tblMembers.update({ ptSession: member.ptSession + 1 }, { where: { userId: req.user.userId } })
     } catch (Error) {
       console.log(Error)
       if (Error === "Data not found") res.status(400).json({ Error })

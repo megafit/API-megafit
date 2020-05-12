@@ -7,6 +7,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   tblHistoryPTs.associate = function (models) {
     // associations can be defined here
+    tblHistoryPTs.belongsTo(models.tblUsers, { foreignKey: "userId" })
     tblHistoryPTs.belongsTo(models.tblClassPts, { foreignKey: "classPtId" })
   };
   return tblHistoryPTs;

@@ -1,5 +1,5 @@
 const router = require("express").Router()
-const classPtController = require("../controllers/classPts")
+const classPtController = require("../controllers/classPt")
 const { authentication } = require("../middleware/auth")
 
 router.use(authentication)

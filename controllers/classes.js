@@ -30,9 +30,9 @@ class classes {
     let data
     try {
       if (req.query.active === "true") {    //only class active
-        data = await tblClasses.findAll({ where: { flagActive: 1 }, include: [{ model: tblUsers }] })
+        data = await tblClasses.findAll({ where: { flagActive: 1 } })
       } else {                              //all class
-        data = await tblClasses.findAll({ include: [{ model: tblUsers }] })
+        data = await tblClasses.findAll()
       }
       if (data) res.status(200).json({ message: "Success", totalRecord: data.length, data })
     } catch (Error) {
@@ -43,7 +43,7 @@ class classes {
 
   static async findOne(req, res) {
     try {
-      let data = await tblClasses.findByPk(req.params.id, { include: [{ model: tblUsers }] })
+      let data = await tblClasses.findByPk(req.params.id)
 
       if (data) res.status(200).json({ message: "Success", data })
       else throw "Data not found"

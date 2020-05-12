@@ -101,8 +101,6 @@ class users {
           // 	include: [{ model: tblStaffs }, { model: tblStaffs }]
           // })
 
-          // console.log(detailUser)
-
           // dataSend = { token, nickname: detailUser.nickname, gender: detailUser.gender }
 
           // if (detailUser.roleId === 4) {
@@ -112,7 +110,6 @@ class users {
           // } else {
           // 	dataSend.isAvailable = detailUser.tblStaff.available
           // }
-          console.log(userLogin)
           res.status(200).json({
             token,
             nickname: userLogin.nickname,
@@ -162,7 +159,7 @@ class users {
             checkId = checkLockerkey.checkId
           }
 
-          res.status(200).json({ message: "Success33", data: detailMember, lockerKey, checkId })
+          res.status(200).json({ message: "Success", data: detailMember, lockerKey, checkId })
 
         } else {
 
@@ -189,14 +186,13 @@ class users {
                 checkId = checkLockerkey.checkId
               }
             }
-            res.status(200).json({ message: "Success33", data: detailUser, lockerKey, checkId })
+            res.status(200).json({ message: "Success", data: detailUser, lockerKey, checkId })
           } else {
             throw "Data not found"
           }
         }
 
       } else {
-        console.log(req.params.id)
         let detailUser = await tblUsers.findByPk(req.params.id, {
           // where: { username: req.body.username },  bila nyari username juga
           include: [{ model: tblStaffs }, { model: tblMembers }]
@@ -223,8 +219,8 @@ class users {
         }
 
         if (detailUser) {
-          if (detailUser.tblMember) res.status(200).json({ message: "Success33", data: detailUser, lockerKey, checkId })
-          else res.status(200).json({ message: "Success33", data: detailUser })
+          if (detailUser.tblMember) res.status(200).json({ message: "Success", data: detailUser, lockerKey, checkId })
+          else res.status(200).json({ message: "Success", data: detailUser })
         }
 
         else { //search staff
@@ -232,7 +228,7 @@ class users {
             include: [{ model: tblStaffs, where: { staffId: req.params.id } }]
           })
 
-          if (detailStaff) res.status(200).json({ message: "Success1", data: detailStaff })
+          if (detailStaff) res.status(200).json({ message: "Success", data: detailStaff })
           else {  //search member
             let detailMember = await tblUsers.findOne({
               include: [{ model: tblMembers, where: { memberId: req.params.id } }]
@@ -253,7 +249,7 @@ class users {
               checkId = checkLockerkey.checkId
             }
 
-            if (detailMember) res.status(200).json({ message: "Success2", data: detailMember, lockerKey, checkId })
+            if (detailMember) res.status(200).json({ message: "Success", data: detailMember, lockerKey, checkId })
             else throw "Data not found"
           }
         }
@@ -313,7 +309,7 @@ class users {
             ["id", "DESC"]
           ]
         })
-        console.log(req.body)
+
         let newData = {
           umur: Number(req.body.umur) !== 0 ? req.body.umur : (oldData && oldData.umur ? oldData.umur : 0),
           height: Number(req.body.height) !== 0 ? req.body.height : (oldData && oldData.height ? oldData.height : 0),
