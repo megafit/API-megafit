@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     // associations can be defined here
     tblMembers.belongsTo(models.tblUsers, { foreignKey: "userId" })
     tblMembers.belongsTo(models.tblPackageMemberships, { foreignKey: "packageMembershipId" })
-    tblMembers.hasMany(models.tblDataSizeMembers, { foreignKey: 'memberId' })
+    tblMembers.hasMany(models.tblDataSizeMembers, { foreignKey: "memberId" })
   };
   return tblMembers;
 };

@@ -7,7 +7,46 @@ class classPts {
   static async findAll(req, res) {
     let data
     try {
-      if (req.query.date) { // History PT for member start/cancel
+      if (req.query.hasPassed === "true") {
+        let hour = Number(req.query.hour)
+
+        if (hour < 10) hour = `0${hour}:00:00`
+        else hour = `${hour}:00:00`
+
+        data = await tblHistoryPTs.findAll({
+          where: { userId: req.query.userId ? req.query.userId : req.user.userId },
+          include: [{
+            model: tblClassPts,
+            where: {
+              [Op.or]: [
+                {
+                  [Op.and]: [
+                    { time: { [Op.lte]: hour } },
+                    { date: { [Op.lte]: Number(req.query.date.slice(8, 10)) } },
+                    { week: getWeek(req.query.date) },
+                    { year: { [Op.lte]: req.query.date.slice(0, 4) } }
+                  ]
+                },
+                {
+                  [Op.and]: [
+                    { date: { [Op.lt]: Number(req.query.date.slice(8, 10)) } },
+                    { week: { [Op.lte]: getWeek(req.query.date) } },
+                    { year: { [Op.lte]: req.query.date.slice(0, 4) } }
+                  ]
+                }
+              ]
+            },
+            include: [{ model: tblUsers }],
+          }],
+        })
+
+        await data.sort(compareTime)
+        await data.sort(compareDate)
+        await data.sort(compareWeek)
+        await data.sort(compareMonth)
+        await data.sort(compareYear)
+
+      } else if (req.query.date) { // History PT for member start/cancel
         let hour = Number(req.query.hour)
 
         if (hour < 10) hour = `0${hour}:00:00`
@@ -44,21 +83,24 @@ class classPts {
         await data.sort(compareWeek)
         await data.sort(compareMonth)
         await data.sort(compareYear)
-        
-      }else{
+
+      } else {
         data = await tblHistoryPTs.findAll({
-          where: { userId: req.user.userId },
+          where: { userId: req.query.userId ? req.query.userId : req.user.userId },
           include: [{
-            model: tblClassPts,            
+            model: tblClassPts,
             include: [{ model: tblUsers }],
           }],
         })
+
         await data.sort(compareTime)
         await data.sort(compareDate)
         await data.sort(compareWeek)
         await data.sort(compareMonth)
         await data.sort(compareYear)
       }
+
+
 
       if (data) res.status(200).json({ message: "Success", totalRecord: data.length, data })
     } catch (Error) {
@@ -69,7 +111,12 @@ class classPts {
 
   static async findOne(req, res) {
     try {
-      let data = await tblClassPts.findByPk(req.params.id, { include: [{ model: tblUsers }] })
+      let data = await tblHistoryPTs.findByPk(req.params.id, {
+        include: [{
+          model: tblClassPts,
+          include: [{ model: tblUsers }],
+        }],
+      })
 
       if (data) res.status(200).json({ message: "Success", data })
       else throw "Data not found"
@@ -81,15 +128,15 @@ class classPts {
   }
 
   static async update(req, res) {
-    let createNewClassPt
     try {
       let newData = {
-        linkZoom: req.body.linkZoom
+        catatan: req.body.catatan,
+        hasJoined: req.body.hasJoined
       }
 
-      await tblClassPts.update(newData, { where: { classPtId: req.params.id } })
+      await tblHistoryPTs.update(newData, { where: { id: req.params.id } })
 
-      let dataReturn = await tblClassPts.findByPk(req.params.id, { include: [{ model: tblUsers }] })
+      let dataReturn = await tblHistoryPTs.findByPk(req.params.id, { include: [{ model: tblUsers }] })
 
       if (dataReturn) res.status(200).json({ message: "Success", data: dataReturn })
       else throw "Data not found"
@@ -103,10 +150,10 @@ class classPts {
 
   static async delete(req, res) {
     try {
-      let deleteClass
-      deleteClass = await tblClassPts.destroy({ where: { classPtId: req.params.id } })
+      let cancelClass
+      cancelClass = await tblHistoryPTs.destroy({ where: { id: req.params.id } })
 
-      if (deleteClass) res.status(200).json({ message: "Success", idDeleted: req.params.id })
+      if (cancelClass) res.status(200).json({ message: "Success", idDeleted: req.params.id })
       else throw "Data not found"
     } catch (Error) {
       console.log(Error)

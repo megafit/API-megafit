@@ -133,10 +133,10 @@ class users {
   }
 
   static async findOne(req, res) {
-    let lockerKey = null, checkId = null
+    let lockerKey = null, checkId = null, dataMember = null
 
     try {
-      if (req.query.idMember) {
+      if (req.query.idMember) { // search before checkin
         let detailMember = await tblUsers.findOne({
           // where: { username: req.body.username },  bila nyari username juga
           include: [{ model: tblMembers, where: { memberId: req.query.idMember } }]
@@ -198,8 +198,8 @@ class users {
           include: [{ model: tblStaffs }, { model: tblMembers }]
         })
 
-        //bila members
         if (detailUser) {
+          //bila members
           if (detailUser.tblMember) {
             //cek sudah expired atau belum
             if (new Date(detailUser.tblMember.activeExpired) < new Date()) {
@@ -215,43 +215,12 @@ class users {
               lockerKey = checkLockerkey.lockerKey
               checkId = checkLockerkey.checkId
             }
-          }
-        }
 
-        if (detailUser) {
-          if (detailUser.tblMember) res.status(200).json({ message: "Success", data: detailUser, lockerKey, checkId })
+            dataMember = await tblDataSizeMembers.findOne({ where: { memberId: detailUser.tblMember.memberId }, order: [['id', 'DESC']] })
+          }
+
+          if (detailUser.tblMember) res.status(200).json({ message: "Success", data: detailUser, lockerKey, checkId, dataMember })
           else res.status(200).json({ message: "Success", data: detailUser })
-        }
-
-        else { //search staff
-          let detailStaff = await tblUsers.findOne({
-            include: [{ model: tblStaffs, where: { staffId: req.params.id } }]
-          })
-
-          if (detailStaff) res.status(200).json({ message: "Success", data: detailStaff })
-          else {  //search member
-            let detailMember = await tblUsers.findOne({
-              include: [{ model: tblMembers, where: { memberId: req.params.id } }]
-            })
-
-            //cek sudah expired atau belum
-            if (new Date(detailMember.tblMember.activeExpired) < new Date()) {
-              await tblUsers.update({ flagActive: false }, { where: { userId: detailUser.userId } })
-              await tblMembers.update({ ptSession: 0 }, { where: { userId: detailUser.userId } })
-
-              detailUser.flagActive = 0
-            }
-
-            let checkLockerkey = await tblCheckinCheckouts.findOne({ where: { userId: detailMember.userId, lockerKey: { [Op.ne]: 0 } } })
-
-            if (checkLockerkey != null) {
-              lockerKey = checkLockerkey.lockerKey
-              checkId = checkLockerkey.checkId
-            }
-
-            if (detailMember) res.status(200).json({ message: "Success", data: detailMember, lockerKey, checkId })
-            else throw "Data not found"
-          }
         }
       }
     } catch (Error) {
