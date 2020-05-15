@@ -322,9 +322,7 @@ class users {
   static async checkToken(req, res) {
     try {
       let userLogin = await tblUsers.findOne({ where: { userId: req.user.userId }, include: [{ model: tblStaffs }, { model: tblMembers }] })
-
-      console.log("positionId", userLogin.tblStaff ? userLogin.tblStaff.positionId : null)
-      console.log("hasConfirmTermAndCondition", userLogin.tblMember ? userLogin.tblMember.hasConfirmTermAndCondition : null)
+      
       res.status(200).json({
         nickname: userLogin.nickname,
         fullname: userLogin.fullname,
