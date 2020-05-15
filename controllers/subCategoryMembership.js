@@ -169,7 +169,6 @@ class subCategoryMembership {
           if (index !== 0) {
             let isAvailable = grosirPrice.find(el => el.id === element.packageMembershipId)
 
-            // console.log(element.packageMembershipId, isAvailable)
             if (!isAvailable) {
               await tblPackageMemberships.destroy({ where: { packageMembershipId: element.packageMembershipId } })
             }

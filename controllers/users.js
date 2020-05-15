@@ -195,7 +195,7 @@ class users {
       } else {
         let detailUser = await tblUsers.findByPk(req.params.id, {
           // where: { username: req.body.username },  bila nyari username juga
-          include: [{ model: tblStaffs }, { model: tblMembers }]
+          include: [{ model: tblStaffs }, { model: tblMembers, include: [{ model: tblDataSizeMembers }] }]
         })
 
         if (detailUser) {
@@ -233,7 +233,6 @@ class users {
   static async findAll(req, res) {
     try {
       let data
-      console.log(req.query)
       if (req.query.only === 'member') {
         data = await tblUsers.findAll({ include: [{ required: true, model: tblMembers, include: [{ model: tblPackageMemberships }] }, { model: tblRoles }] })
       } else if (req.query.only === 'staff') {
@@ -315,7 +314,6 @@ class users {
 
       if (exeUpdate) res.status(200).json({ message: "Success", data: dataReturn })
     } catch (Error) {
-      console.log('line 232 =', Error)
       if (Error === 'password salah') res.status(400).json({ msg: "Username/password invalid" })
       else res.status(500).json({ Error })
     }
