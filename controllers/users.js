@@ -328,7 +328,6 @@ class users {
         fullname: userLogin.fullname,
         userId: userLogin.userId,
         roleId: userLogin.roleId,
-        testing: "testing",
         positionId: userLogin.tblStaff ? userLogin.tblStaff.positionId : null,
         hasConfirmTermAndCondition: userLogin.tblMember ? userLogin.tblMember.hasConfirmTermAndCondition : null
       })

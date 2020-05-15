@@ -5,6 +5,7 @@
     "database": "megafit_development",
     "host": "127.0.0.1",
     "dialect": "mysql",
+    "logging": false,
     "operatorsAliases": "Op",
     "pool": {
       "max": 5,
@@ -18,6 +19,7 @@
     "database": "database_test",
     "host": "127.0.0.1",
     "dialect": "mysql",
+    "logging": false,
     "operatorsAliases": "Op",
     "pool": {
       "max": 5,
@@ -31,6 +33,7 @@
     "database": "megafit",
     "host": "127.0.0.1",
     "dialect": "mysql",
+    "logging": false,
     "operatorsAliases": "Op",
     "pool": {
       "max": 5,

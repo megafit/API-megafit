@@ -1,5 +1,6 @@
 const { tblCheckinCheckouts, tblUsers, tblStaffs, tblMembers, tblAttendances } = require("../models")
 // const Op = require('sequelize').Op
+const { log } = require('../helpers/log')
 
 class checkin {
 
@@ -11,11 +12,7 @@ class checkin {
           await tblMembers.update({ activeDate: new Date() }, { where: { userId: dataMembers.userId } })
         }
       }
-      // let checkinLockerkey = await tblCheckinCheckouts.findOne({ where: { userId: req.body.userId, lockerKey: { [Op.ne]: 0 } } })
 
-      // if (checkinLockerkey) {
-      //   throw "lockerkey true"
-      // } else {
       let newUserCheckin = {
         userId: req.body.userId,
         adminIdCheckin: req.user.userId,
@@ -24,22 +21,40 @@ class checkin {
       }
 
       let userCheckin = await tblCheckinCheckouts.create(newUserCheckin)
-      await tblMembers.update({ lastCheckin: new Date() }, { where: {userId: req.body.userId} })
+      await tblMembers.update({ lastCheckin: new Date() }, { where: { userId: req.body.userId } })
       res.status(201).json({ message: "Success", data: userCheckin })
-      // }
+
+      let newData = {
+        userId: req.user.userId,
+        url: `http://megafit.co.id/checkin-checkout`,
+        method: 'post',
+        status: 201,
+        message: "",
+      }
+      log(newData)
 
     } catch (Error) {
-      console.log(Error)
-      // if (Error === "lockerkey true") res.status(409).json({ message: "Error", info: "The locker key hasn't been returned" })
-      // else res.status(500).json({ Error })
       res.status(500).json({ Error })
+
+      let newData = {
+        userId: req.user.userId,
+        url: `http://megafit.co.id/checkin-checkout`,
+        method: 'post',
+        status: 500,
+        message: JSON.stringify(Error),
+      }
+      log(newData)
+
     }
   }
 
 
   static async findAll(req, res) {
+    let query = ""
     try {
       if (req.query.checkin === "true") {
+        query = query + "?checkin=true"
+
         let onlyCheckin = await tblCheckinCheckouts.findAll({
           where: { checkoutTime: null },
           include: [
@@ -51,20 +66,42 @@ class checkin {
 
         res.status(200).json({ message: "Success", totalRecord: onlyCheckin.length, data: onlyCheckin })
       } else {
-        let allCheckin = await tblCheckinCheckouts.findAll({ include: [{ model: tblUsers, as: "member" }, { model: tblUsers, as: "adminCheckin" }, { model: tblUsers, as: "adminCheckout" }] })
+        let allCheckin = await tblCheckinCheckouts.findAll({ include: [{ model: tblUsers, as: "member" }, { model: tblUsers, as: "admin_checkin" }, { model: tblUsers, as: "admin_checkout" }] })
 
         res.status(200).json({ message: "Success", totalRecord: allCheckin.length, data: allCheckin })
       }
+
+      let newData = {
+        userId: req.user.userId,
+        url: `http://megafit.co.id/checkin-checkout${query}`,
+        method: 'get',
+        status: 200,
+        message: "",
+      }
+      log(newData)
+
     } catch (Error) {
-      console.log(Error)
       res.status(500).json({ Error })
+
+      let newData = {
+        userId: req.user.userId,
+        url: `http://megafit.co.id/checkin-checkout${query}`,
+        method: 'get',
+        status: 500,
+        message: JSON.stringify(Error),
+      }
+      log(newData)
+
     }
   }
 
 
   static async update(req, res) {
+    let query = ""
     try {
       if (req.query.lockerKey === 'true') {
+        query = query + "?lockerKey=true"
+
         let userCheckinUpdate = await tblCheckinCheckouts.update({ lockerKey: 0 }, { where: { checkId: req.params.id } })
         let dataReturn = await tblCheckinCheckouts.findByPk(req.params.id, { include: [{ model: tblUsers, as: "member", include: [{ model: tblStaffs }, { model: tblMembers }] }] })
 
@@ -84,10 +121,43 @@ class checkin {
         if (userCheckinUpdate) res.status(200).json({ message: "Success", data: dataReturn })
         else throw "Data not found"
       }
+
+      let newData = {
+        userId: req.user.userId,
+        url: `http://megafit.co.id/checkin-checkout/${req.params.id}${query}`,
+        method: 'put',
+        status: 200,
+        message: "",
+      }
+      log(newData)
+
     } catch (Error) {
-      console.log(Error)
-      if (Error === "Data not found") res.status(400).json({ Error })
-      else res.status(500).json({ Error })
+      if (Error === "Data not found") {
+        res.status(400).json({ Error })
+
+        let newData = {
+          userId: req.user.userId,
+          url: `http://megafit.co.id/checkin-checkout/${req.params.id}${query}`,
+          method: 'put',
+          status: 400,
+          message: JSON.stringify(Error)
+        }
+        log(newData)
+
+      }
+      else {
+        res.status(500).json({ Error })
+
+        let newData = {
+          userId: req.user.userId,
+          url: `http://megafit.co.id/checkin-checkout/${req.params.id}${query}`,
+          method: 'put',
+          status: 500,
+          message: JSON.stringify(Error)
+        }
+        log(newData)
+
+      }
     }
   }
 }
