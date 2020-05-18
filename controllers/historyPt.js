@@ -155,50 +155,17 @@ class classPts {
 
       if (cancelClass) res.status(200).json({ message: "Success", idDeleted: req.params.id })
       else throw "Data not found"
-    } catch (Error) {
-      console.log(Error)
-      if (Error === "Data not found") res.status(400).json({ Error })
-      else res.status(500).json({ Error })
-    }
-  }
-
-  static async joinClass(req, res) {
-    try {
-      let newData = {
-        userId: req.user.userId,
-        classPtId: req.params.id,
-      }
-
-      let joinPtClass = await tblHistoryPTs.create(newData)
-
-      let dataReturn = await tblHistoryPTs.findByPk(joinPtClass.null)
-
-      res.status(200).json({ message: "Success", data: dataReturn })
-
-      let member = await tblMembers.findOne({ where: { userId: req.user.userId } })
-      await tblMembers.update({ ptSession: member.ptSession - 1 }, { where: { userId: req.user.userId } })
-
-    } catch (Error) {
-      console.log(Error)
-      if (Error === "Data not found") res.status(400).json({ Error })
-      else res.status(500).json({ Error })
-    }
-  }
-
-  static async cancelJoinClass(req, res) {
-    try {
-      await tblHistoryPTs.destroy({ where: { id: req.params.id } })
-
-      res.status(200).json({ message: "Success", idDeleted: req.params.id })
 
       let member = await tblMembers.findOne({ where: { userId: req.user.userId } })
       await tblMembers.update({ ptSession: member.ptSession + 1 }, { where: { userId: req.user.userId } })
+
     } catch (Error) {
       console.log(Error)
       if (Error === "Data not found") res.status(400).json({ Error })
       else res.status(500).json({ Error })
     }
   }
+
 }
 
 function compareYear(a, b) {

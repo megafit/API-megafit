@@ -202,7 +202,12 @@ class users {
           //bila members
           if (detailUser.tblMember) {
             //cek sudah expired atau belum
-            if (new Date(detailUser.tblMember.activeExpired) < new Date()) {
+            if ((new Date(detailUser.tblMember.activeExpired).getFullYear() < new Date().getFullYear()) || 
+            (new Date(detailUser.tblMember.activeExpired).getMonth() < new Date().getMonth() && 
+            new Date(detailUser.tblMember.activeExpired).getFullYear() <= new Date().getFullYear()) || 
+            (new Date(detailUser.tblMember.activeExpired).getDate() < new Date().getDate() && 
+            new Date(detailUser.tblMember.activeExpired).getMonth() === new Date().getMonth() && 
+            new Date(detailUser.tblMember.activeExpired).getFullYear() === new Date().getFullYear())) {
               await tblUsers.update({ flagActive: false }, { where: { userId: detailUser.userId } })
               await tblMembers.update({ ptSession: 0 }, { where: { userId: detailUser.userId } })
 
@@ -322,7 +327,7 @@ class users {
   static async checkToken(req, res) {
     try {
       let userLogin = await tblUsers.findOne({ where: { userId: req.user.userId }, include: [{ model: tblStaffs }, { model: tblMembers }] })
-      
+
       res.status(200).json({
         nickname: userLogin.nickname,
         fullname: userLogin.fullname,
@@ -574,6 +579,48 @@ class users {
 
   }
 
+  static async updateDataMember(req, res) {
+    try {
+      let member = await tblMembers.findOne({ where: { userId: req.params.id } })
+
+      let oldData = await tblDataSizeMembers.findOne({
+        where: { memberId: member.memberId },
+        order: [
+          ["id", "DESC"]
+        ]
+      })
+
+      let newData = {
+        umur: Number(req.body.umur) !== 0 ? req.body.umur : (oldData && oldData.umur ? oldData.umur : 0),
+        height: Number(req.body.height) !== 0 ? req.body.height : (oldData && oldData.height ? oldData.height : 0),
+        weight: Number(req.body.weight) !== 0 ? req.body.weight : (oldData && oldData.weight ? oldData.weight : 0),
+        triceps: Number(req.body.triceps) !== 0 ? req.body.triceps : (oldData && oldData.triceps ? oldData.triceps : 0),
+        dada: Number(req.body.dada) !== 0 ? req.body.dada : (oldData && oldData.dada ? oldData.dada : 0),
+        perut: Number(req.body.perut) !== 0 ? req.body.perut : (oldData && oldData.perut ? oldData.perut : 0),
+        pinggul: Number(req.body.pinggul) !== 0 ? req.body.pinggul : (oldData && oldData.pinggul ? oldData.pinggul : 0),
+        pinggang: Number(req.body.pinggang) !== 0 ? req.body.pinggang : (oldData && oldData.pinggang ? oldData.pinggang : 0),
+        paha: Number(req.body.paha) !== 0 ? req.body.paha : (oldData && oldData.paha ? oldData.paha : 0),
+        memberId: member.memberId
+      }
+
+      await tblDataSizeMembers.create(newData)
+
+      let dataReturn = await tblUsers.findByPk(req.params.id, {
+        include: [{
+          model: tblMembers, include: [{
+            model: tblDataSizeMembers, order: [
+              ["createAt", "DESC"]
+            ]
+          }]
+        }]
+      })
+
+      res.status(200).json({ message: "Success", data: dataReturn })
+
+    } catch (Error) {
+      res.status(500).json({ Error })
+    }
+  }
 }
 
 module.exports = users
