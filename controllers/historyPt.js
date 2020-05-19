@@ -22,18 +22,28 @@ class classPts {
                 {
                   [Op.and]: [
                     { time: { [Op.lte]: hour } },
-                    { date: { [Op.lte]: Number(req.query.date.slice(8, 10)) } },
+                    { date: { [Op.lte]: new Date(req.query.date).getDate() } },
+                    { month: { [Op.lte]: new Date(req.query.date).getMonth() + 1 } },
                     { week: getWeek(req.query.date) },
-                    { year: { [Op.lte]: req.query.date.slice(0, 4) } }
+                    { year: { [Op.lte]: new Date(req.query.date).getFullYear() } }
                   ]
                 },
                 {
                   [Op.and]: [
-                    { date: { [Op.lt]: Number(req.query.date.slice(8, 10)) } },
+                    { date: { [Op.lt]: new Date(req.query.date).getDate() } },
+                    { month: { [Op.lte]: new Date(req.query.date).getMonth() + 1 } },
                     { week: { [Op.lte]: getWeek(req.query.date) } },
-                    { year: { [Op.lte]: req.query.date.slice(0, 4) } }
+                    { year: { [Op.lte]: new Date(req.query.date).getFullYear() } }
                   ]
-                }
+                },
+                {
+                  [Op.and]: [
+                    { month: { [Op.lt]: new Date(req.query.date).getMonth() + 1 } },
+                    { week: { [Op.lt]: getWeek(req.query.date) } },
+                    { year: { [Op.lte]: new Date(req.query.date).getFullYear() } }
+                  ]
+                },
+                { year: { [Op.lt]: new Date(req.query.date).getFullYear() } }
               ]
             },
             include: [{ model: tblUsers }],
@@ -48,7 +58,7 @@ class classPts {
 
       } else if (req.query.date) { // History PT for member start/cancel
         let hour = Number(req.query.hour)
-
+        console.log("MASUK")
         if (hour < 10) hour = `0${hour}:00:00`
         else hour = `${hour}:00:00`
 
@@ -61,18 +71,28 @@ class classPts {
                 {
                   [Op.and]: [
                     { time: { [Op.gte]: hour } },
-                    { date: { [Op.gte]: Number(req.query.date.slice(8, 10)) } },
+                    { date: { [Op.gte]: new Date(req.query.date).getDate() } },
+                    { month: { [Op.gte]: new Date(req.query.date).getMonth() + 1 } },
                     { week: getWeek(req.query.date) },
-                    { year: { [Op.gte]: req.query.date.slice(0, 4) } }
+                    { year: { [Op.gte]: new Date(req.query.date).getFullYear() } }
                   ]
                 },
                 {
                   [Op.and]: [
-                    { date: { [Op.gt]: Number(req.query.date.slice(8, 10)) } },
+                    { date: { [Op.gt]: new Date(req.query.date).getDate() } },
+                    { month: { [Op.gte]: new Date(req.query.date).getMonth() + 1 } },
                     { week: { [Op.gte]: getWeek(req.query.date) } },
-                    { year: { [Op.gte]: req.query.date.slice(0, 4) } }
+                    { year: { [Op.gte]: new Date(req.query.date).getFullYear() } }
                   ]
-                }
+                },
+                {
+                  [Op.and]: [
+                    { week: { [Op.gt]: getWeek(req.query.date) } },
+                    { month: { [Op.gte]: new Date(req.query.date).getMonth() + 1 } },
+                    { year: { [Op.gte]: new Date(req.query.date).getFullYear() } }
+                  ]
+                },
+                { year: { [Op.gt]: new Date(req.query.date).getFullYear() } }
               ]
             },
             include: [{ model: tblUsers }],

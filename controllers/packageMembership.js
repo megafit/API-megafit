@@ -25,16 +25,32 @@ class packageMembership {
 
   static async findAll(req, res) {
     try {
-      let data = await tblPackageMemberships.findAll({
-        include: [{
-          model: tblSubCategoryMemberships,
-        }],
-        order: [
-          ["times", "ASC"],
-          ["packageMembershipId", "ASC"],
-          ["package", "DESC"]
-        ]
-      })
+      let data
+      if (req.query.onlyActive === "true") {
+        data = await tblPackageMemberships.findAll({
+          include: [{
+            model: tblSubCategoryMemberships,
+            where: { activeFlag: 1 }
+          }],
+          order: [
+            ["times", "ASC"],
+            ["packageMembershipId", "ASC"],
+            ["package", "DESC"]
+          ]
+        })
+      } else {
+        data = await tblPackageMemberships.findAll({
+          include: [{
+            model: tblSubCategoryMemberships,
+            where: { activeFlag: 1 }
+          }],
+          order: [
+            ["times", "ASC"],
+            ["packageMembershipId", "ASC"],
+            ["package", "DESC"]
+          ]
+        })
+      }
 
       if (data) res.status(200).json({ message: "Success", totalRecord: data.length, data })
     } catch (Error) {
