@@ -6,7 +6,6 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true
     },
     userId: DataTypes.INTEGER,
-    positionId: DataTypes.INTEGER,
     isPermanent: DataTypes.BOOLEAN,
     available: DataTypes.BOOLEAN,
     cardImage: DataTypes.STRING
@@ -17,7 +16,6 @@ module.exports = (sequelize, DataTypes) => {
   tblStaffs.associate = function (models) {
     // associations can be defined here
     tblStaffs.belongsTo(models.tblUsers, { foreignKey: "userId" })
-    tblStaffs.belongsTo(models.tblPositions, { foreignKey: "positionId" })
   };
   return tblStaffs;
 };

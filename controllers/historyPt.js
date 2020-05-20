@@ -58,7 +58,6 @@ class classPts {
 
       } else if (req.query.date) { // History PT for member start/cancel
         let hour = Number(req.query.hour)
-        console.log("MASUK")
         if (hour < 10) hour = `0${hour}:00:00`
         else hour = `${hour}:00:00`
 

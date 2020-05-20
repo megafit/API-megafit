@@ -11,7 +11,7 @@ router.post('/signin', userController.signin)
 router.post('/data-member/:id', authentication, userController.updateDataMember)
 router.get('/check-token', authentication, userController.checkToken)
 router.get('/:id', authentication, userController.findOne)
-router.put('/:id', authentication, userController.update)
+router.put('/:id', authentication, uploadSingle.single('file'), userController.update)
 router.get('/', userController.findAll)
 
 module.exports = router

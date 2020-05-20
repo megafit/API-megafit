@@ -16,14 +16,6 @@ module.exports = {
         },
         onDelete: 'CASCADE',
       },
-      positionId: {
-        type: Sequelize.INTEGER(11),
-        references: {
-          model: 'tblPositions',
-          key: 'positionId'
-        },
-        onDelete: 'SET NULL',
-      },
       isPermanent: {
         type: Sequelize.BOOLEAN
       },

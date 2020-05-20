@@ -30,12 +30,11 @@ class users {
 
       let createUser = await tblUsers.create(newUser)
 
-      if (Number(req.body.roleId) !== 4) {		//1 superadmin, 2 admin, 3 pt, 4 member 
+      if (Number(req.body.roleId) !== 4) {
         let createStaff, updateStaff
 
         let newStaff = {
           userId: createUser.null,
-          positionId: req.body.positionId,
           isPermanent: req.body.isPermanent,
           available: req.body.available
         }
@@ -116,7 +115,6 @@ class users {
             fullname: userLogin.fullname,
             userId: userLogin.userId,
             roleId: userLogin.roleId,
-            positionId: userLogin.tblStaff ? userLogin.tblStaff.positionId : null,
             hasConfirmTermAndCondition: userLogin.tblMember ? userLogin.tblMember.hasConfirmTermAndCondition : null
           })
         } else {
@@ -202,12 +200,12 @@ class users {
           //bila members
           if (detailUser.tblMember) {
             //cek sudah expired atau belum
-            if ((new Date(detailUser.tblMember.activeExpired).getFullYear() < new Date().getFullYear()) || 
-            (new Date(detailUser.tblMember.activeExpired).getMonth() < new Date().getMonth() && 
-            new Date(detailUser.tblMember.activeExpired).getFullYear() <= new Date().getFullYear()) || 
-            (new Date(detailUser.tblMember.activeExpired).getDate() < new Date().getDate() && 
-            new Date(detailUser.tblMember.activeExpired).getMonth() === new Date().getMonth() && 
-            new Date(detailUser.tblMember.activeExpired).getFullYear() === new Date().getFullYear())) {
+            if ((new Date(detailUser.tblMember.activeExpired).getFullYear() < new Date().getFullYear()) ||
+              (new Date(detailUser.tblMember.activeExpired).getMonth() < new Date().getMonth() &&
+                new Date(detailUser.tblMember.activeExpired).getFullYear() <= new Date().getFullYear()) ||
+              (new Date(detailUser.tblMember.activeExpired).getDate() < new Date().getDate() &&
+                new Date(detailUser.tblMember.activeExpired).getMonth() === new Date().getMonth() &&
+                new Date(detailUser.tblMember.activeExpired).getFullYear() === new Date().getFullYear())) {
               await tblUsers.update({ flagActive: false }, { where: { userId: detailUser.userId } })
               await tblMembers.update({ ptSession: 0 }, { where: { userId: detailUser.userId } })
 
@@ -299,12 +297,23 @@ class users {
         exeUpdate = await tblDataSizeMembers.create(newData)
 
       } else {
-        let newUserData = {}
-        if (req.body.phone) newUserData.phone = req.body.phone
-        if (req.body.email) newUserData.email = req.body.email
-        if (req.body.username) newUserData.username = req.body.username
+        let newUserData = {
+          username: req.body.username,
+          fullname: req.body.fullname,
+          nickname: req.body.nickname,
+          noKtp: req.body.noKtp,
+          dateOfBirth: new Date(req.body.dateOfBirth),
+          email: req.body.email,
+          phone: req.body.phone,
+          gender: req.body.gender,
+          igAccount: req.body.igAccount,
+          haveWhatsapp: req.body.haveWhatsapp,
+        }
+        if (req.body.password) newUserData.password = hash(req.body.password)
 
         exeUpdate = await tblUsers.update(newUserData, { where: { userId: req.params.id } })
+
+        await tblMembers.update({ activeExpired: req.body.activeExpired }, { where: { userId: req.params.id } })
       }
 
       let dataReturn = await tblUsers.findByPk(req.params.id, {
@@ -319,6 +328,7 @@ class users {
 
       if (exeUpdate) res.status(200).json({ message: "Success", data: dataReturn })
     } catch (Error) {
+      console.log(Error)
       if (Error === 'password salah') res.status(400).json({ msg: "Username/password invalid" })
       else res.status(500).json({ Error })
     }
@@ -333,7 +343,6 @@ class users {
         fullname: userLogin.fullname,
         userId: userLogin.userId,
         roleId: userLogin.roleId,
-        positionId: userLogin.tblStaff ? userLogin.tblStaff.positionId : null,
         hasConfirmTermAndCondition: userLogin.tblMember ? userLogin.tblMember.hasConfirmTermAndCondition : null
       })
 
@@ -345,8 +354,9 @@ class users {
 
   static async importExcel(req, res) {
     try {
+      let listError = []
       const data = excelToJson({
-        sourceFile: `/${req.file.path}`,
+        sourceFile: `./${req.file.path}`,
         sheets: [{
           name: 'member',
           header: {
@@ -386,9 +396,8 @@ class users {
             I: "kelamin",
             J: "akunIg",
             K: "adaWhatsapp",
-            L: "position",
-            M: "role",
-            N: "jamMasuk"
+            L: "role",
+            M: "jamMasuk"
           }
         }, {
           name: 'package',
@@ -460,7 +469,7 @@ class users {
       if (data.member.length > 0) {
         await data.member.forEach(async element => {
           try {
-            let createMember, updateMember
+            let createMember
 
             let newUser = {
               fullname: element.namaLengkap,
@@ -474,12 +483,15 @@ class users {
               igAccount: element.akunIg,
               haveWhatsapp: element.adaWhatsapp.toLowerCase() === 'iya' ? 1 : 0,
 
-              roleId: 4,
+              roleId: 2,
               flagActive: 1,
 
               username: element.username,
-              password: hash('12345'),
             }
+
+            let pass = `${element.tanggalLahir.getFullYear()}${element.tanggalLahir.getMonth() + 1 > 10 ? element.tanggalLahir.getMonth() + 1 : `0${element.tanggalLahir.getMonth() + 1}`}${element.tanggalLahir.getDate() > 10 ? element.tanggalLahir.getDate() : `0${element.tanggalLahir.getDate()}`}`
+
+            newUser.password = hash(pass)
 
             let createUser = await tblUsers.create(newUser)
 
@@ -504,7 +516,7 @@ class users {
               }
             })
 
-            if (createMember) updateMember = await tblMembers.update({ cardImage: `/qr/${nameImageCard}.png` }, { where: { memberId: nameImageCard } })
+            if (createMember) await tblMembers.update({ cardImage: `/qr/${nameImageCard}.png` }, { where: { memberId: nameImageCard } })
 
           } catch (Error) {
             console.log(Error)
@@ -514,9 +526,10 @@ class users {
 
       // Staff
       if (data.staff.length > 0) {
+        let roles = await tblRoles.findAll()
         await data.staff.forEach(async element => {
           try {
-            let createStaff, updateStaff
+            let createStaff
 
             let newUser = {
               fullname: element.namaLengkap,
@@ -533,14 +546,15 @@ class users {
               flagActive: 1,
 
               username: element.username,
-              password: hash('12345'),
             }
 
-            if (element.role.toLowerCase() === 'admin') {
-              newUser.roleId = 2
-            } else if (element.role.toLowerCase() === 'staff') {
-              newUser.roleId = 3
-            }
+            let roleUser = await roles.find(role => role.role.toLowerCase() === element.role.toLowerCase())
+
+            newUser.roleId = roleUser.roleId
+
+            let pass = `${element.tanggalLahir.getFullYear()}${element.tanggalLahir.getMonth() + 1 > 10 ? element.tanggalLahir.getMonth() + 1 : `0${element.tanggalLahir.getMonth() + 1}`}${element.tanggalLahir.getDate() > 10 ? element.tanggalLahir.getDate() : `0${element.tanggalLahir.getDate()}`}`
+
+            newUser.password = hash(pass)
 
             let createUser = await tblUsers.create(newUser)
 
@@ -548,7 +562,6 @@ class users {
               staffId: element.idStaff,
               userId: createUser.null,
               isPermanent: element.jamMasuk.toLowerCase() === "shift" ? 0 : 1,
-              positionId: element.position.toLowerCase() === "pt" ? 3 : 2,
               available: 1
             }
 
@@ -563,7 +576,7 @@ class users {
               }
             })
 
-            if (createStaff) updateStaff = await tblStaffs.update({ cardImage: `/qr/${nameImageCard}.png` }, { where: { userId: createStaff.userId } })
+            if (createStaff) await tblStaffs.update({ cardImage: `/qr/${nameImageCard}.png` }, { where: { userId: createStaff.userId } })
 
           } catch (Error) {
             console.log(Error)
@@ -573,7 +586,6 @@ class users {
 
       res.status(200).json({ message: "Success", data })
     } catch (Error) {
-      console.log(Error)
       res.status(500).json({ Error })
     }
 
